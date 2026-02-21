@@ -1,0 +1,61 @@
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { apiClient } from '../api/client';
+import { Card } from '../components/Card';
+import { theme } from '../styles/theme';
+import { TripSummary } from '../types/models';
+
+const Container = styled.div`
+  max-width: 800px;
+  margin: 0 auto;
+  padding: ${theme.spacing.xl};
+`;
+
+const Title = styled.h1`
+  font-family: ${theme.fonts.body};
+  color: ${theme.colors.text};
+  margin-bottom: ${theme.spacing.lg};
+`;
+
+const TripList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${theme.spacing.md};
+`;
+
+const TripTitle = styled.h3`
+  font-family: ${theme.fonts.body};
+  color: ${theme.colors.text};
+  margin: 0 0 ${theme.spacing.xs} 0;
+`;
+
+const TripDestination = styled.p`
+  font-family: ${theme.fonts.body};
+  color: ${theme.colors.textLight};
+  margin: 0;
+`;
+
+export const Home = () => {
+  const [trips, setTrips] = useState<TripSummary[]>([]);
+
+  useEffect(() => {
+    apiClient.get<TripSummary[]>('/itinerary').then((res) => {
+      console.log('Fetched trips:', res.data);
+      setTrips(res.data);
+    });
+  }, []);
+
+  return (
+    <Container>
+      <Title>Book A Trip</Title>
+      <TripList>
+        {trips.map((trip) => (
+          <Card key={trip.id}>
+            <TripTitle>{trip.title}</TripTitle>
+            <TripDestination>{trip.destination}</TripDestination>
+          </Card>
+        ))}
+      </TripList>
+    </Container>
+  );
+};
