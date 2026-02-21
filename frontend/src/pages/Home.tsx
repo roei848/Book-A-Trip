@@ -3,7 +3,32 @@ import styled from 'styled-components';
 import { apiClient } from '../api/client';
 import { Card } from '../components/Card';
 import { theme } from '../styles/theme';
-import { TripSummary } from '../types/models';
+import type { TripSummary } from '../types/models';
+
+export const Home = () => {
+  const [trips, setTrips] = useState<TripSummary[]>([]);
+
+  useEffect(() => {
+    apiClient.get<TripSummary[]>('/itinerary').then((res) => {
+      console.log('Fetched trips:', res.data);
+      setTrips(res.data);
+    });
+  }, []);
+
+  return (
+    <Container>
+      <Title>Book A Trip</Title>
+      <TripList>
+        {trips.map((trip) => (
+          <Card key={trip.id}>
+            <TripTitle>{trip.title}</TripTitle>
+            <TripDestination>{trip.destination}</TripDestination>
+          </Card>
+        ))}
+      </TripList>
+    </Container>
+  );
+};
 
 const Container = styled.div`
   max-width: 800px;
@@ -34,28 +59,3 @@ const TripDestination = styled.p`
   color: ${theme.colors.textLight};
   margin: 0;
 `;
-
-export const Home = () => {
-  const [trips, setTrips] = useState<TripSummary[]>([]);
-
-  useEffect(() => {
-    apiClient.get<TripSummary[]>('/itinerary').then((res) => {
-      console.log('Fetched trips:', res.data);
-      setTrips(res.data);
-    });
-  }, []);
-
-  return (
-    <Container>
-      <Title>Book A Trip</Title>
-      <TripList>
-        {trips.map((trip) => (
-          <Card key={trip.id}>
-            <TripTitle>{trip.title}</TripTitle>
-            <TripDestination>{trip.destination}</TripDestination>
-          </Card>
-        ))}
-      </TripList>
-    </Container>
-  );
-};

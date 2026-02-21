@@ -1,9 +1,19 @@
-import styled from 'styled-components';
-import { theme } from '../styles/theme';
+import styled from "styled-components";
+import { theme } from "../styles/theme";
 
 interface InputProps {
   label?: string;
 }
+
+export const Input = ({
+  label,
+  ...props
+}: InputProps & React.InputHTMLAttributes<HTMLInputElement>) => (
+  <Wrapper>
+    {label && <Label>{label}</Label>}
+    <StyledInput {...props} />
+  </Wrapper>
+);
 
 const Wrapper = styled.div`
   display: flex;
@@ -31,10 +41,3 @@ const StyledInput = styled.input`
     border-color: ${theme.colors.primary};
   }
 `;
-
-export const Input = ({ label, ...props }: InputProps & React.InputHTMLAttributes<HTMLInputElement>) => (
-  <Wrapper>
-    {label && <Label>{label}</Label>}
-    <StyledInput {...props} />
-  </Wrapper>
-);

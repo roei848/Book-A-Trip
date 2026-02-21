@@ -1,9 +1,16 @@
-import styled from 'styled-components';
-import { theme } from '../styles/theme';
+import styled from "styled-components";
+import { theme } from "../styles/theme";
 
 interface ButtonProps {
-  variant?: 'primary' | 'secondary';
+  variant?: "primary" | "secondary";
 }
+
+export const Button = ({
+  variant = "primary",
+  ...props
+}: ButtonProps & React.ButtonHTMLAttributes<HTMLButtonElement>) => (
+  <StyledButton variant={variant} {...props} />
+);
 
 const StyledButton = styled.button<ButtonProps>`
   padding: ${theme.spacing.sm} ${theme.spacing.md};
@@ -16,15 +23,13 @@ const StyledButton = styled.button<ButtonProps>`
   transition: background-color 0.2s;
 
   background-color: ${({ variant }) =>
-    variant === 'secondary' ? theme.colors.secondary : theme.colors.primary};
+    variant === "secondary" ? theme.colors.secondary : theme.colors.primary};
   color: ${theme.colors.surface};
 
   &:hover {
     background-color: ${({ variant }) =>
-      variant === 'secondary' ? theme.colors.secondaryHover : theme.colors.primaryHover};
+      variant === "secondary"
+        ? theme.colors.secondaryHover
+        : theme.colors.primaryHover};
   }
 `;
-
-export const Button = ({ variant = 'primary', ...props }: ButtonProps & React.ButtonHTMLAttributes<HTMLButtonElement>) => (
-  <StyledButton variant={variant} {...props} />
-);
