@@ -24,3 +24,22 @@ Runs on http://localhost:3000.
 
 - Backend: see [`.rules/be/codeStyle.md`](.rules/be/codeStyle.md) and [`.rules/be/codeStructure.md`](.rules/be/codeStructure.md)
 - Frontend: see [`.rules/fe/codeStyle.md`](.rules/fe/codeStyle.md) and [`.rules/fe/codeStructure.md`](.rules/fe/codeStructure.md)
+
+## Agents
+
+### `react-component-builder`
+Use when creating any new React component or page. It enforces all code style rules, checks existing types/API files, reads the theme, and runs the `simplify-code` skill before finishing.
+
+**Trigger:** user asks to create/add/build a component, page, or UI element.
+
+### `api-docs-explorer`
+Use when the user provides an API documentation URL. Reads the skill from `~/.claude/skills/api-explorer/`, explores the API (OpenAPI, WSDL, or HTML), and writes findings to `docs/api-exploration/<api-name>.md`. Returns a compact summary — never raw docs.
+
+**Trigger:** user pastes a documentation URL or says "explore this API / here are the docs".
+
+## Skills
+
+### `simplify-code`
+Run after writing or modifying any frontend component, page, API file, or backend C# file — before reporting work as complete. Checks a checklist of style rules and fixes violations inline.
+
+**Trigger:** always, automatically after finishing any file write/edit in this project.
