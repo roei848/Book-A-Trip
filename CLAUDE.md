@@ -20,22 +20,7 @@ cd frontend && npm run dev
 ```
 Runs on http://localhost:3000.
 
-## Coding Standards
+## Rules
 
-### Backend (C#)
-- C# 12 features (primary constructors, collection expressions)
-- PascalCase for public members
-- File-scoped namespaces
-- JSON: camelCase properties, enums as camelCase strings
-
-### Frontend (TypeScript/React)
-- Functional components only
-- styled-components for all styling (no CSS files)
-- camelCase for variables/functions, PascalCase for components/types
-- Axios for API calls
-
-## Architecture
-
-- **Backend:** Single .NET project at `backend/BookATrip.Api/` with folder-based separation (Controllers, Services, Models, Data)
-- **Frontend:** Vite + React app at `frontend/` with atomic components
-- **Database:** SQLite via EF Core (dev), only `TestTable` entity currently mapped
+- Backend: see [`.rules/be/codeStyle.md`](.rules/be/codeStyle.md) and [`.rules/be/codeStructure.md`](.rules/be/codeStructure.md)
+- Frontend: see [`.rules/fe/codeStyle.md`](.rules/fe/codeStyle.md) and [`.rules/fe/codeStructure.md`](.rules/fe/codeStructure.md)
