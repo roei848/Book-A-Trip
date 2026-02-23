@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { apiClient } from '../api/client';
-import { Card } from '../components/Card';
+import { Card } from '../components/sharedComponents/Card';
 import { theme } from '../styles/theme';
 import type { TripSummary } from '../types/models';
 
