@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using BookATrip.Api.Constants;
 using BookATrip.Api.Models.Enums;
 using Microsoft.IdentityModel.Tokens;
 
@@ -13,6 +14,8 @@ public interface IJwtService
 
 public class JwtService(IConfiguration configuration) : IJwtService
 {
+    private static readonly JwtSecurityTokenHandler TokenHandler = new();
+
     public string GenerateToken(Guid userId, string email, UserRole role)
     {
         var secret = configuration["Jwt:Secret"]
@@ -25,7 +28,7 @@ public class JwtService(IConfiguration configuration) : IJwtService
         {
             new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, email),
-            new Claim("role", role.ToString()),
+            new Claim(ClaimNames.Role, role.ToString()),
         };
 
         var token = new JwtSecurityToken(
@@ -33,6 +36,6 @@ public class JwtService(IConfiguration configuration) : IJwtService
             expires: DateTime.UtcNow.AddDays(7),
             signingCredentials: credentials);
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        return TokenHandler.WriteToken(token);
     }
 }

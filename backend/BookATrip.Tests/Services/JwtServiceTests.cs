@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using BookATrip.Api.Constants;
 using BookATrip.Api.Models.Enums;
 using BookATrip.Api.Services;
 using Microsoft.Extensions.Configuration;
@@ -39,7 +40,7 @@ public class JwtServiceTests
 
         Assert.Equal(userId.ToString(), jwt.Subject);
         Assert.Equal(email, jwt.Claims.First(c => c.Type == JwtRegisteredClaimNames.Email).Value);
-        Assert.Equal("Admin", jwt.Claims.First(c => c.Type == "role").Value);
+        Assert.Equal("Admin", jwt.Claims.First(c => c.Type == ClaimNames.Role).Value);
     }
 
     [Fact]
