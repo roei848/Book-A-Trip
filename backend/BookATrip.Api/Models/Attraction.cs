@@ -5,6 +5,7 @@ namespace BookATrip.Api.Models;
 public class Attraction
 {
     public string Id { get; set; } = string.Empty;
+    public int TripDayId { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public Location Location { get; set; } = new();
