@@ -4,6 +4,7 @@ import { Header } from './components/sharedComponents/Header';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeContextProvider } from './contexts/ThemeContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { LanguageProvider } from './context/LanguageContext';
 import { Home } from './pages/Home';
 import { CreateTrip } from './pages/CreateTrip';
 import { TripPage } from './pages/TripPage';
@@ -55,37 +56,39 @@ function App() {
     <ThemeContextProvider>
       <GlobalStyle />
       <AuthProvider>
-        <BrowserRouter>
-          <Header />
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/auth/callback" element={<AuthCallbackPage />} />
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Home />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/create"
-              element={
-                <ProtectedRoute>
-                  <CreateTrip />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/trip/:id"
-              element={
-                <ProtectedRoute>
-                  <TripPage />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </BrowserRouter>
+        <LanguageProvider>
+          <BrowserRouter>
+            <Header />
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/auth/callback" element={<AuthCallbackPage />} />
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <Home />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/create"
+                element={
+                  <ProtectedRoute>
+                    <CreateTrip />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/trip/:id"
+                element={
+                  <ProtectedRoute>
+                    <TripPage />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </BrowserRouter>
+        </LanguageProvider>
       </AuthProvider>
     </ThemeContextProvider>
   );
