@@ -13,7 +13,7 @@ export const Header = () => {
   const { currentUser, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const avatarRef = useRef<HTMLDivElement>(null);
-  const { t, isRtl, toggleLang, lang } = useLanguage();
+  const { t, toggleLang, lang } = useLanguage();
   const { isDark, toggleTheme } = useTheme();
 
   useEffect(() => {
@@ -54,18 +54,18 @@ export const Header = () => {
           onClick={() => navigate('/')}
         >
           <span className="home-icon">&#8962;</span>
-          <span>הטיולים שלי</span>
+          <span>{t('home', 'myTrips')}</span>
         </button>
         {currentUser?.role === UserRole.Admin && (
           <button
             className={`nav-btn ${isActive('/admin/users') ? 'active' : ''}`}
             onClick={() => navigate('/admin/users')}
           >
-            ניהול משתמשים
+            {t('header', 'adminUsers')}
           </button>
         )}
         <button className="nav-link" onClick={() => navigate('/create')}>
-          + טיול חדש
+          {t('home', 'newTrip')}
         </button>
       </div>
 
@@ -92,7 +92,7 @@ export const Header = () => {
               </div>
               <div className="dropdown-divider" />
               <button className="dropdown-logout" onClick={handleLogout}>
-                התנתק
+                {t('header', 'logout')}
               </button>
             </div>
           )}

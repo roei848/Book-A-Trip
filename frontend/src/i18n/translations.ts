@@ -117,6 +117,10 @@ export const translations = {
       mapComingSoon: 'המפה בקרוב',
       budgetComingSoon: 'התקציב בקרוב',
     },
+    header: {
+      adminUsers: 'ניהול משתמשים',
+      logout: 'התנתק',
+    },
     loginPage: {
       title: 'Book A Trip',
       subtitle: 'התחבר כדי לתכנן את ההרפתקה הבאה שלך',
@@ -239,6 +243,10 @@ export const translations = {
       addItemPrompt: 'Add new item:',
       mapComingSoon: 'Map coming soon',
       budgetComingSoon: 'Budget coming soon',
+    },
+    header: {
+      adminUsers: 'User Management',
+      logout: 'Logout',
     },
     loginPage: {
       title: 'Book A Trip',
