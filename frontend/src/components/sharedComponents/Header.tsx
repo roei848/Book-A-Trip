@@ -1,15 +1,17 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { useLanguage } from '../../context/LanguageContext';
 import { theme } from '../../styles/theme';
 
 export const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t, isRtl, toggleLang, lang } = useLanguage();
 
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <HeaderWrapper>
+    <HeaderWrapper dir={isRtl ? 'rtl' : 'ltr'}>
       <div className="nav-right" onClick={() => navigate('/')}>
         <div className="logo-icon">&#9992;</div>
         <span className="brand-name">Book-A-Trip</span>
@@ -21,14 +23,17 @@ export const Header = () => {
           onClick={() => navigate('/')}
         >
           <span className="home-icon">&#8962;</span>
-          <span>הטיולים שלי</span>
+          <span>{t('home', 'myTrips')}</span>
         </button>
         <button className="nav-link" onClick={() => navigate('/create')}>
-          + טיול חדש
+          {t('home', 'newTrip')}
         </button>
       </div>
 
       <div className="nav-left">
+        <button className="lang-toggle" onClick={toggleLang} aria-label="Toggle language">
+          🌐 {lang === 'he' ? 'EN' : 'עב'}
+        </button>
         <button className="icon-btn moon-btn" aria-label="Toggle dark mode">
           &#9789;
         </button>
@@ -47,7 +52,6 @@ const HeaderWrapper = styled.header`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  direction: rtl;
   padding: 0 ${theme.spacing.xl};
   height: 64px;
   background: ${theme.colors.surface};
@@ -85,7 +89,6 @@ const HeaderWrapper = styled.header`
     display: flex;
     align-items: center;
     gap: ${theme.spacing.lg};
-    direction: rtl;
   }
 
   .nav-btn {
@@ -137,6 +140,24 @@ const HeaderWrapper = styled.header`
     display: flex;
     align-items: center;
     gap: ${theme.spacing.md};
+  }
+
+  .lang-toggle {
+    border: 1px solid ${theme.colors.border};
+    border-radius: 20px;
+    background: ${theme.colors.surface};
+    font-family: ${theme.fonts.body};
+    font-size: 13px;
+    font-weight: 600;
+    color: ${theme.colors.textLight};
+    padding: ${theme.spacing.xs} ${theme.spacing.md};
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+
+    &:hover {
+      background: ${theme.colors.background};
+      color: ${theme.colors.text};
+    }
   }
 
   .icon-btn {

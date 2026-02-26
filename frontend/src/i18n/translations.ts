@@ -6,6 +6,12 @@ export const translations = {
     home: {
       title: 'Book A Trip',
       bookButton: 'הזמן טיול',
+      myTrips: 'הטיולים שלי',
+      newTrip: '+ טיול חדש',
+      subtitle: 'נהל ותכנן את כל הטיולים שלך במקום אחד',
+      createButton: '+ צור טיול חדש',
+      searchPlaceholder: 'חפש טיול לפי יעד...',
+      emptyState: 'לא נמצאו טיולים. התחל לתכנן את ההרפתקה הבאה שלך!',
     },
     createTrip: {
       pageTitle: 'צור טיול חדש',
@@ -76,6 +82,12 @@ export const translations = {
     home: {
       title: 'Book A Trip',
       bookButton: 'Book a Trip',
+      myTrips: 'My Trips',
+      newTrip: '+ New Trip',
+      subtitle: 'Manage and plan all your trips in one place',
+      createButton: '+ Create New Trip',
+      searchPlaceholder: 'Search trip by destination...',
+      emptyState: 'No trips found. Start planning your next adventure!',
     },
     createTrip: {
       pageTitle: 'Create New Trip',

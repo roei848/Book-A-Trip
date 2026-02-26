@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { getTrips } from '../api/trips';
 import { Button } from '../components/sharedComponents/Button';
 import { Input } from '../components/sharedComponents/Input';
+import { useLanguage } from '../context/LanguageContext';
 import { theme } from '../styles/theme';
 import type { TripSummary } from '../types/models';
 
@@ -11,31 +12,32 @@ export const Home = () => {
   const [trips, setTrips] = useState<TripSummary[]>([]);
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
+  const { t, isRtl } = useLanguage();
 
   useEffect(() => {
     getTrips().then(setTrips);
   }, []);
 
   const filtered = trips.filter(
-    (t) =>
-      t.destination.toLowerCase().includes(search.toLowerCase()) ||
-      t.title.toLowerCase().includes(search.toLowerCase()),
+    (trip) =>
+      trip.destination.toLowerCase().includes(search.toLowerCase()) ||
+      trip.title.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
-    <HomeWrapper>
+    <HomeWrapper dir={isRtl ? 'rtl' : 'ltr'}>
       <main className="main">
         <div className="header-row">
           <div className="header-text">
-            <h1 className="page-title">My Trips</h1>
-            <p className="page-subtitle">Manage and plan all your trips in one place</p>
+            <h1 className="page-title">{t('home', 'myTrips')}</h1>
+            <p className="page-subtitle">{t('home', 'subtitle')}</p>
           </div>
-          <Button onClick={() => navigate('/create')}>+ Create New Trip</Button>
+          <Button onClick={() => navigate('/create')}>{t('home', 'createButton')}</Button>
         </div>
 
         <div className="search-bar">
           <Input
-            placeholder="Search trip by destination..."
+            placeholder={t('home', 'searchPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -43,8 +45,8 @@ export const Home = () => {
 
         {filtered.length === 0 ? (
           <div className="empty-state">
-            <p className="empty-text">No trips found. Start planning your next adventure!</p>
-            <Button onClick={() => navigate('/create')}>+ Create New Trip</Button>
+            <p className="empty-text">{t('home', 'emptyState')}</p>
+            <Button onClick={() => navigate('/create')}>{t('home', 'createButton')}</Button>
           </div>
         ) : (
           <div className="trip-grid">
