@@ -10,6 +10,8 @@ import { CreateTrip } from './pages/CreateTrip';
 import { TripPage } from './pages/TripPage';
 import { LoginPage } from './pages/LoginPage';
 import { AuthCallbackPage } from './pages/AuthCallbackPage';
+import { AdminRoute } from './components/auth/AdminRoute';
+import { AdminUsersPage } from './pages/AdminUsersPage';
 
 const GlobalStyle = createGlobalStyle`
   :root {
@@ -84,6 +86,14 @@ function App() {
                   <ProtectedRoute>
                     <TripPage />
                   </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/users"
+                element={
+                  <AdminRoute>
+                    <AdminUsersPage />
+                  </AdminRoute>
                 }
               />
             </Routes>

@@ -1,19 +1,48 @@
+import { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { theme } from '../../styles/theme';
+import { useAuth } from '../../contexts/AuthContext';
+import { UserRole } from '../../types/auth';
 
 export const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { currentUser, logout } = useAuth();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const avatarRef = useRef<HTMLDivElement>(null);
   const { t, isRtl, toggleLang, lang } = useLanguage();
   const { isDark, toggleTheme } = useTheme();
 
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (avatarRef.current && !avatarRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const isActive = (path: string) => location.pathname === path;
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  const emailInitial = currentUser?.email?.[0]?.toUpperCase() ?? '?';
+
+  const roleLabelMap: Record<UserRole, string> = {
+    [UserRole.Free]: 'Free',
+    [UserRole.Premium]: 'Premium',
+    [UserRole.Admin]: 'Admin',
+  };
+
   return (
-    <HeaderWrapper dir={isRtl ? 'rtl' : 'ltr'}>
+    <HeaderWrapper>
       <div className="nav-right" onClick={() => navigate('/')}>
         <div className="logo-icon">&#9992;</div>
         <span className="brand-name">Book-A-Trip</span>
@@ -25,10 +54,18 @@ export const Header = () => {
           onClick={() => navigate('/')}
         >
           <span className="home-icon">&#8962;</span>
-          <span>{t('home', 'myTrips')}</span>
+          <span>הטיולים שלי</span>
         </button>
+        {currentUser?.role === UserRole.Admin && (
+          <button
+            className={`nav-btn ${isActive('/admin/users') ? 'active' : ''}`}
+            onClick={() => navigate('/admin/users')}
+          >
+            ניהול משתמשים
+          </button>
+        )}
         <button className="nav-link" onClick={() => navigate('/create')}>
-          {t('home', 'newTrip')}
+          + טיול חדש
         </button>
       </div>
 
@@ -39,8 +76,26 @@ export const Header = () => {
         <button className="icon-btn moon-btn" onClick={toggleTheme} aria-label="Toggle dark mode">
           {isDark ? '\u2600' : '\u263D'}
         </button>
-        <div className="avatar" aria-label="User profile">
-          <span>&#128100;</span>
+        <div className="avatar-wrapper" ref={avatarRef}>
+          <div
+            className="avatar"
+            aria-label="User profile"
+            onClick={() => setDropdownOpen((o) => !o)}
+          >
+            <span>{emailInitial}</span>
+          </div>
+          {dropdownOpen && (
+            <div className="dropdown">
+              <div className="dropdown-email">{currentUser?.email}</div>
+              <div className="dropdown-role">
+                {currentUser ? roleLabelMap[currentUser.role] : ''}
+              </div>
+              <div className="dropdown-divider" />
+              <button className="dropdown-logout" onClick={handleLogout}>
+                התנתק
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -54,6 +109,7 @@ const HeaderWrapper = styled.header`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  direction: rtl;
   padding: 0 ${theme.spacing.xl};
   height: 64px;
   background: ${theme.colors.surface};
@@ -91,6 +147,7 @@ const HeaderWrapper = styled.header`
     display: flex;
     align-items: center;
     gap: ${theme.spacing.lg};
+    direction: rtl;
   }
 
   .nav-btn {
@@ -144,24 +201,6 @@ const HeaderWrapper = styled.header`
     gap: ${theme.spacing.md};
   }
 
-  .lang-toggle {
-    border: 1px solid ${theme.colors.border};
-    border-radius: 20px;
-    background: ${theme.colors.surface};
-    font-family: ${theme.fonts.body};
-    font-size: 13px;
-    font-weight: 600;
-    color: ${theme.colors.textLight};
-    padding: ${theme.spacing.xs} ${theme.spacing.md};
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s;
-
-    &:hover {
-      background: ${theme.colors.background};
-      color: ${theme.colors.text};
-    }
-  }
-
   .icon-btn {
     width: 36px;
     height: 36px;
@@ -181,6 +220,10 @@ const HeaderWrapper = styled.header`
     }
   }
 
+  .avatar-wrapper {
+    position: relative;
+  }
+
   .avatar {
     width: 36px;
     height: 36px;
@@ -189,9 +232,64 @@ const HeaderWrapper = styled.header`
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
     cursor: pointer;
     overflow: hidden;
+    user-select: none;
+  }
+
+  .dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    min-width: 180px;
+    background: ${theme.colors.surface};
+    border: 1px solid ${theme.colors.border};
+    border-radius: ${theme.borderRadius};
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    padding: ${theme.spacing.sm} 0;
+    z-index: 100;
+    direction: rtl;
+  }
+
+  .dropdown-email {
+    padding: ${theme.spacing.sm} ${theme.spacing.md};
+    font-size: 13px;
+    color: ${theme.colors.text};
+    font-weight: 500;
+    word-break: break-all;
+  }
+
+  .dropdown-role {
+    padding: 0 ${theme.spacing.md} ${theme.spacing.sm};
+    font-size: 12px;
+    color: ${theme.colors.textLight};
+  }
+
+  .dropdown-divider {
+    height: 1px;
+    background: ${theme.colors.border};
+    margin: 0 0 ${theme.spacing.sm};
+  }
+
+  .dropdown-logout {
+    display: block;
+    width: 100%;
+    padding: ${theme.spacing.sm} ${theme.spacing.md};
+    border: none;
+    background: transparent;
+    font-family: ${theme.fonts.body};
+    font-size: 14px;
+    color: ${theme.colors.error};
+    cursor: pointer;
+    text-align: right;
+    transition: background 0.15s;
+
+    &:hover {
+      background: ${theme.colors.background};
+    }
   }
 
   .gradient-line {
