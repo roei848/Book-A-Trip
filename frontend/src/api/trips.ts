@@ -20,3 +20,7 @@ export const generateEquipmentList = async (tripId: string): Promise<EquipmentLi
   const res = await apiClient.post<EquipmentList>(`/itinerary/${tripId}/equipment`);
   return res.data;
 };
+
+export const updateTripImage = async (id: string, imageUrl: string): Promise<void> => {
+  await apiClient.patch(`/itinerary/${id}/image`, { imageUrl });
+};

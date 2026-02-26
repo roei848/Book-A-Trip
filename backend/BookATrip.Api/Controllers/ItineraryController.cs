@@ -40,4 +40,13 @@ public class ItineraryController(ITripService tripService, ITripGenerationServic
         var equipmentList = await equipmentListService.GenerateEquipmentListAsync(trip);
         return Ok(equipmentList);
     }
+
+    [HttpPatch("{id}/image")]
+    public async Task<IActionResult> UpdateImage(string id, [FromBody] UpdateTripImageRequest request)
+    {
+        var updated = await tripService.UpdateTripImageAsync(id, request.ImageUrl);
+        return updated ? NoContent() : NotFound();
+    }
 }
+
+public record UpdateTripImageRequest(string ImageUrl);
