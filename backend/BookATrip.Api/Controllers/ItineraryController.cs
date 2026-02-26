@@ -9,7 +9,7 @@ namespace BookATrip.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-public class ItineraryController(ITripService tripService, ITripGenerationService tripGenerationService) : ControllerBase
+public class ItineraryController(ITripService tripService, ITripGenerationService tripGenerationService, IEquipmentListService equipmentListService) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -30,5 +30,14 @@ public class ItineraryController(ITripService tripService, ITripGenerationServic
     {
         var trip = await tripGenerationService.GenerateTripAsync(request);
         return Ok(trip);
+    }
+
+    [HttpPost("{id}/equipment")]
+    public async Task<IActionResult> GenerateEquipmentList(string id)
+    {
+        var trip = await tripService.GetByIdAsync(id);
+        if (trip is null) return NotFound();
+        var equipmentList = await equipmentListService.GenerateEquipmentListAsync(trip);
+        return Ok(equipmentList);
     }
 }

@@ -36,6 +36,7 @@ builder.Services.AddHttpClient(TripGenerationService.ClientName, client =>
 
 builder.Services.AddScoped<ITripGenerationService, TripGenerationService>();
 builder.Services.AddScoped<ITripService, TripService>();
+builder.Services.AddScoped<IEquipmentListService, EquipmentListService>();
 
 var allowedOrigin = builder.Configuration["Cors:AllowedOrigin"];
 

@@ -51,6 +51,17 @@ export interface TripSummary {
   destination: string;
 }
 
+export interface EquipmentItem {
+  name: string;
+  category: string;
+  quantity: number;
+  isEssential: boolean;
+}
+
+export interface EquipmentList {
+  items: EquipmentItem[];
+}
+
 export interface GenerateTripRequest {
   destination: string;
   startDate: string;
