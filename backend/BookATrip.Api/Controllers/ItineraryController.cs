@@ -1,3 +1,4 @@
+using BookATrip.Api.Models;
 using BookATrip.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -5,7 +6,7 @@ namespace BookATrip.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ItineraryController(ITripService tripService) : ControllerBase
+public class ItineraryController(ITripService tripService, ITripGenerationService tripGenerationService) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -19,5 +20,12 @@ public class ItineraryController(ITripService tripService) : ControllerBase
     {
         var trip = await tripService.GetByIdAsync(id);
         return trip is null ? NotFound() : Ok(trip);
+    }
+
+    [HttpPost("generate")]
+    public async Task<IActionResult> Generate([FromBody] GenerateTripRequest request)
+    {
+        var trip = await tripGenerationService.GenerateTripAsync(request);
+        return Ok(trip);
     }
 }

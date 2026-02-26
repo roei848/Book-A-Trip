@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using BookATrip.Api.Data;
@@ -19,6 +20,15 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddHttpClient(TripGenerationService.ClientName, client =>
+{
+    var apiKey = builder.Configuration["OpenRouter:ApiKey"];
+    var baseUrl = builder.Configuration["OpenRouter:BaseUrl"]!;
+    client.BaseAddress = new Uri(baseUrl);
+    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+});
+
+builder.Services.AddScoped<ITripGenerationService, TripGenerationService>();
 builder.Services.AddScoped<ITripService, TripService>();
 
 var allowedOrigin = builder.Configuration["Cors:AllowedOrigin"]!;
