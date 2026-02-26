@@ -17,22 +17,24 @@ export const Home = () => {
 
   return (
     <Container>
-      <Title>Book A Trip</Title>
-      <TripList>
-        {trips.map((trip) => (
-          <Card key={trip.id}>
-            <TripTitle>{trip.title}</TripTitle>
-            <TripDestination>{trip.destination}</TripDestination>
-          </Card>
-        ))}
-      </TripList>
+      <Content>
+        <Title>Book A Trip</Title>
+        <TripList>
+          {trips.map((trip) => (
+            <Card key={trip.id}>
+              <TripTitle>{trip.title}</TripTitle>
+              <TripDestination>{trip.destination}</TripDestination>
+            </Card>
+          ))}
+        </TripList>
+      </Content>
     </Container>
   );
 };
 
 const Container = styled.div`
-  max-width: 800px;
-  margin: 0 auto;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
   padding: ${theme.spacing.xl};
 `;
 
@@ -58,4 +60,9 @@ const TripDestination = styled.p`
   font-family: ${theme.fonts.body};
   color: ${theme.colors.textLight};
   margin: 0;
+`;
+
+const Content = styled.div`
+  max-width: 800px;
+  margin: 0 auto;
 `;
