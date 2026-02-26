@@ -11,10 +11,15 @@ namespace BookATrip.Api.Data;
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
     public DbSet<TestTable> TestTables => Set<TestTable>();
+    public DbSet<User> Users => Set<User>();
     public DbSet<Trip> Trips => Set<Trip>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.GoogleId)
+            .IsUnique();
+
         var attractionCategoryListConverter = new ValueConverter<List<AttractionCategory>, string>(
             v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
             v => JsonSerializer.Deserialize<List<AttractionCategory>>(v, (JsonSerializerOptions?)null) ?? new List<AttractionCategory>()

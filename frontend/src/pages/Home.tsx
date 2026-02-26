@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { getTrips } from '../api/trips';
 import { Button } from '../components/sharedComponents/Button';
 import { Input } from '../components/sharedComponents/Input';
+import { ThemeToggle } from '../components/sharedComponents/ThemeToggle';
 import { theme } from '../styles/theme';
 import type { TripSummary } from '../types/models';
 
@@ -34,6 +35,7 @@ export const Home = () => {
           <span className="nav-link" onClick={() => navigate('/create')}>
             + New Trip
           </span>
+          <ThemeToggle />
         </div>
       </nav>
 
