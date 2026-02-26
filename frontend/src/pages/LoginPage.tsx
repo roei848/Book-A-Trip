@@ -1,18 +1,20 @@
 import { useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
+import { useLanguage } from '../context/LanguageContext';
 import { theme } from '../styles/theme';
 
 export const LoginPage = () => {
   const [searchParams] = useSearchParams();
+  const { t } = useLanguage();
   const hasError = searchParams.get('error') === 'auth_failed';
 
   return (
     <LoginPageWrapper>
-      <h1>Book A Trip</h1>
-      <p>Sign in to plan your next adventure</p>
-      {hasError && <p className="error">Sign in failed. Please try again.</p>}
+      <h1>{t('loginPage', 'title')}</h1>
+      <p>{t('loginPage', 'subtitle')}</p>
+      {hasError && <p className="error">{t('loginPage', 'error')}</p>}
       <a href="http://localhost:5000/api/auth/login" className="signin-link">
-        Sign in with Google
+        {t('loginPage', 'signInButton')}
       </a>
     </LoginPageWrapper>
   );
