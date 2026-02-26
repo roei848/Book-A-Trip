@@ -17,4 +17,5 @@ public class Trip
     public List<AttractionCategory> PointsOfInterest { get; set; } = [];
     public int TravelersCount { get; set; }
     public string Note { get; set; } = string.Empty;
+    public string? ImageUrl { get; set; }
 }

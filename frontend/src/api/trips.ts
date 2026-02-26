@@ -15,3 +15,7 @@ export const generateTrip = async (request: GenerateTripRequest): Promise<Trip> 
   const res = await apiClient.post<Trip>('/itinerary/generate', request);
   return res.data;
 };
+
+export const updateTripImage = async (id: string, imageUrl: string): Promise<void> => {
+  await apiClient.patch(`/itinerary/${id}/image`, { imageUrl });
+};
