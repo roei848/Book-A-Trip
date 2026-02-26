@@ -1,7 +1,14 @@
+using System.Text;
+using BookATrip.Api.Constants;
+using BookATrip.Api.Data;
+using BookATrip.Api.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using BookATrip.Api.Data;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,11 +35,45 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+.AddGoogle(options =>
+{
+    options.ClientId = builder.Configuration["Google:ClientId"]
+        ?? throw new InvalidOperationException("Google:ClientId is not configured");
+    options.ClientSecret = builder.Configuration["Google:ClientSecret"]
+        ?? throw new InvalidOperationException("Google:ClientSecret is not configured");
+    options.CallbackPath = "/api/auth/google-callback";
+})
+.AddJwtBearer(options =>
+{
+    var secret = builder.Configuration["Jwt:Secret"]
+        ?? throw new InvalidOperationException("Jwt:Secret is not configured");
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        RoleClaimType = ClaimNames.Role,
+    };
+});
+
+builder.Services.AddAuthorization();
+builder.Services.AddScoped<IEncryptionService, EncryptionService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
+
 var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseCors();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
