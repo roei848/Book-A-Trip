@@ -22,7 +22,7 @@ Runs on http://localhost:3000.
 
 ## Git Workflow
 
-**Every task must be done on a new branch.** Before starting any work, create a branch named after the task (e.g., `feature/add-trip-card`, `fix/booking-form-validation`). Never commit directly to `master`.
+**Every task must be done on a new branch.** Before starting any work, create a branch named after the task (e.g., `feature/add-trip-card`, `fix/booking-form-validation`). Never commit or push directly to `master` — always open a PR.
 
 ## Rules
 

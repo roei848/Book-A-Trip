@@ -9,6 +9,15 @@
             "command": "bash ~/.claude/hooks/format-on-edit.sh"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"$CLAUDE_TOOL_INPUT\" | grep -qE \"git push.*(origin )?master|git push.*master\" && echo \"ERROR: Direct push to master is not allowed. Create a branch and open a PR instead.\" && exit 1 || exit 0'"
+          }
+        ]
       }
     ]
   },
