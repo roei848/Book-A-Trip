@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { theme } from '../../styles/theme';
@@ -10,6 +10,17 @@ export const Header = () => {
   const location = useLocation();
   const { currentUser, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const avatarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (avatarRef.current && !avatarRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -58,7 +69,7 @@ export const Header = () => {
         <button className="icon-btn moon-btn" aria-label="Toggle dark mode">
           &#9789;
         </button>
-        <div className="avatar-wrapper">
+        <div className="avatar-wrapper" ref={avatarRef}>
           <div
             className="avatar"
             aria-label="User profile"
