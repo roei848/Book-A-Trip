@@ -44,8 +44,8 @@ const LoginPageWrapper = styled.div`
   .signin-link {
     padding: ${theme.spacing.md} ${theme.spacing.xl};
     background: ${theme.colors.primary};
-    color: white;
+    color: ${theme.colors.surface};
     text-decoration: none;
-    border-radius: 4px;
+    border-radius: ${theme.borderRadius};
   }
 `;

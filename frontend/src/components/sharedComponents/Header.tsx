@@ -1,12 +1,14 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useLanguage } from '../../context/LanguageContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import { theme } from '../../styles/theme';
 
 export const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t, isRtl, toggleLang, lang } = useLanguage();
+  const { isDark, toggleTheme } = useTheme();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -34,8 +36,8 @@ export const Header = () => {
         <button className="lang-toggle" onClick={toggleLang} aria-label="Toggle language">
           🌐 {lang === 'he' ? 'EN' : 'עב'}
         </button>
-        <button className="icon-btn moon-btn" aria-label="Toggle dark mode">
-          &#9789;
+        <button className="icon-btn moon-btn" onClick={toggleTheme} aria-label="Toggle dark mode">
+          {isDark ? '\u2600' : '\u263D'}
         </button>
         <div className="avatar" aria-label="User profile">
           <span>&#128100;</span>
