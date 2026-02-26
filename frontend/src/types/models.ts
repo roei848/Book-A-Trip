@@ -5,6 +5,7 @@ import {
   TransportType,
   TravelPace,
 } from './enums';
+import { UserRole } from './auth';
 
 export interface Location {
   lat: number;
@@ -67,6 +68,6 @@ export interface AdminUser {
   id: string;
   email: string;
   name: string;
-  role: string;
+  role: UserRole;
   createdAt: string;
 }

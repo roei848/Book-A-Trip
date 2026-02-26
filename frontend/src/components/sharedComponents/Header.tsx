@@ -70,7 +70,7 @@ export const Header = () => {
             <div className="dropdown">
               <div className="dropdown-email">{currentUser?.email}</div>
               <div className="dropdown-role">
-                {currentUser ? roleLabelMap[currentUser.role as UserRole] : ''}
+                {currentUser ? roleLabelMap[currentUser.role] : ''}
               </div>
               <div className="dropdown-divider" />
               <button className="dropdown-logout" onClick={handleLogout}>
