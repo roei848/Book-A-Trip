@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import type { Trip, TripSummary } from '../types/models';
+import type { GenerateTripRequest, Trip, TripSummary } from '../types/models';
 
 export const getTrips = async (): Promise<TripSummary[]> => {
   const res = await apiClient.get<TripSummary[]>('/itinerary');
@@ -8,5 +8,10 @@ export const getTrips = async (): Promise<TripSummary[]> => {
 
 export const getTripById = async (id: string): Promise<Trip> => {
   const res = await apiClient.get<Trip>(`/itinerary/${id}`);
+  return res.data;
+};
+
+export const generateTrip = async (request: GenerateTripRequest): Promise<Trip> => {
+  const res = await apiClient.post<Trip>('/itinerary/generate', request);
   return res.data;
 };
