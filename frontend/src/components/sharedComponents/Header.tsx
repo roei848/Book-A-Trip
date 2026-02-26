@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { useLanguage } from '../../context/LanguageContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import { theme } from '../../styles/theme';
 import { useAuth } from '../../contexts/AuthContext';
 import { UserRole } from '../../types/auth';
@@ -11,6 +13,8 @@ export const Header = () => {
   const { currentUser, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const avatarRef = useRef<HTMLDivElement>(null);
+  const { t, isRtl, toggleLang, lang } = useLanguage();
+  const { isDark, toggleTheme } = useTheme();
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -66,8 +70,11 @@ export const Header = () => {
       </div>
 
       <div className="nav-left">
-        <button className="icon-btn moon-btn" aria-label="Toggle dark mode">
-          &#9789;
+        <button className="lang-toggle" onClick={toggleLang} aria-label="Toggle language">
+          🌐 {lang === 'he' ? 'EN' : 'עב'}
+        </button>
+        <button className="icon-btn moon-btn" onClick={toggleTheme} aria-label="Toggle dark mode">
+          {isDark ? '\u2600' : '\u263D'}
         </button>
         <div className="avatar-wrapper" ref={avatarRef}>
           <div

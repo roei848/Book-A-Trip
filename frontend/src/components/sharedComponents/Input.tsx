@@ -35,6 +35,7 @@ const StyledInput = styled.input`
   font-family: ${theme.fonts.body};
   font-size: 14px;
   color: ${theme.colors.text};
+  background: ${theme.colors.surface};
   outline: none;
 
   &:focus {
