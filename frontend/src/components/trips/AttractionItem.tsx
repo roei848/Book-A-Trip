@@ -1,16 +1,7 @@
 import styled from 'styled-components';
-import { AttractionCategory } from '../../types/enums';
 import type { Attraction } from '../../types/models';
 import { theme } from '../../styles/theme';
-
-const categoryLabels: Record<AttractionCategory, string> = {
-  [AttractionCategory.Nature]: 'Nature',
-  [AttractionCategory.Museum]: 'Museum',
-  [AttractionCategory.Food]: 'Food',
-  [AttractionCategory.Shopping]: 'Shopping',
-  [AttractionCategory.Hotel]: 'Hotel',
-  [AttractionCategory.Other]: 'Other',
-};
+import { useLanguage } from '../../context/LanguageContext';
 
 const formatDuration = (minutes: number): string => {
   if (minutes < 60) return `${minutes}m`;
@@ -24,7 +15,9 @@ interface AttractionItemProps {
 }
 
 export const AttractionItem = ({ attraction }: AttractionItemProps) => {
-  const label = categoryLabels[attraction.category] ?? categoryLabels[AttractionCategory.Other];
+  const { t } = useLanguage();
+  const categoryKey = `category${attraction.category.charAt(0).toUpperCase()}${attraction.category.slice(1)}` as const;
+  const label = t('tripPage', categoryKey) || t('tripPage', 'categoryOther');
 
   return (
     <AttractionItemWrapper>
