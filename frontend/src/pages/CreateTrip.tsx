@@ -68,7 +68,7 @@ const initialFormState: TripFormState = {
 
 export const CreateTrip = () => {
   const navigate = useNavigate();
-  const { t, isRtl, toggleLang, lang } = useLanguage();
+  const { t, isRtl } = useLanguage();
   const [form, setForm] = useState<TripFormState>(initialFormState);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -137,12 +137,6 @@ export const CreateTrip = () => {
   return (
     <CreateTripWrapper dir={isRtl ? 'rtl' : 'ltr'}>
       <div className="page-content">
-        <div className="lang-bar">
-          <button className="lang-toggle" onClick={toggleLang}>
-            🌐 {lang === 'he' ? 'EN' : 'עב'}
-          </button>
-        </div>
-
         <div className="header">
           <h1 className="page-title">{t('createTrip', 'pageTitle')}</h1>
           <p className="page-subtitle">{t('createTrip', 'pageSubtitle')}</p>
@@ -398,29 +392,6 @@ const CreateTripWrapper = styled.div`
     display: flex;
     flex-direction: column;
     gap: ${theme.spacing.lg};
-  }
-
-  .lang-bar {
-    display: flex;
-    justify-content: flex-end;
-  }
-
-  .lang-toggle {
-    background: ${theme.colors.border};
-    border: 1px solid ${theme.colors.border};
-    border-radius: ${theme.borderRadius};
-    color: ${theme.colors.text};
-    font-family: ${theme.fonts.body};
-    font-size: 13px;
-    font-weight: 600;
-    padding: ${theme.spacing.xs} ${theme.spacing.md};
-    cursor: pointer;
-    transition: background 0.15s;
-
-    &:hover {
-      background: ${theme.colors.secondary};
-      color: ${theme.colors.surface};
-    }
   }
 
   .header {
