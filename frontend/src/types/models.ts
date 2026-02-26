@@ -62,3 +62,11 @@ export interface GenerateTripRequest {
   travelersCount: number;
   note: string;
 }
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  createdAt: string;
+}
