@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { getTripById } from '../api/trips';
+import { getTripById, updateTripImage } from '../api/trips';
+import { trackUnsplashDownload } from '../api/unsplash';
+import type { UnsplashPhoto } from '../api/unsplash';
 import { DayCard } from '../components/trips/DayCard';
+import { UnsplashImagePicker } from '../components/trips/UnsplashImagePicker';
 import { Button } from '../components/sharedComponents/Button';
 import { theme } from '../styles/theme';
 import type { Trip } from '../types/models';
@@ -37,6 +40,7 @@ export const TripPage = () => {
   const [trip, setTrip] = useState<Trip | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -80,9 +84,15 @@ export const TripPage = () => {
           <div className="hero">
             <img
               className="hero-image"
-              src={`https://picsum.photos/seed/${encodeURIComponent(trip.destination)}/1200/500`}
+              src={
+                trip.imageUrl ??
+                `https://picsum.photos/seed/${encodeURIComponent(trip.destination)}/1200/500`
+              }
               alt={trip.destination}
             />
+            <button className="edit-image-btn" onClick={() => setPickerOpen(true)}>
+              Edit photo
+            </button>
             <div className="hero-overlay">
               <div className="hero-content">
                 <div className="destination-badge">
@@ -131,6 +141,19 @@ export const TripPage = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {trip && pickerOpen && (
+        <UnsplashImagePicker
+          initialQuery={trip.destination}
+          onSelect={async (photo: UnsplashPhoto) => {
+            await trackUnsplashDownload(photo.links.download_location);
+            await updateTripImage(trip.id, photo.urls.regular);
+            setTrip({ ...trip, imageUrl: photo.urls.regular });
+            setPickerOpen(false);
+          }}
+          onClose={() => setPickerOpen(false)}
+        />
       )}
     </TripPageWrapper>
   );
@@ -206,6 +229,27 @@ const TripPageWrapper = styled.div`
     height: 100%;
     object-fit: cover;
     display: block;
+  }
+
+  .edit-image-btn {
+    position: absolute;
+    top: ${theme.spacing.md};
+    right: ${theme.spacing.md};
+    z-index: 1;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: ${theme.borderRadius};
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: background 0.15s;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.7);
+    }
   }
 
   .hero-overlay {

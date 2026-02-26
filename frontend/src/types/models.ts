@@ -42,6 +42,7 @@ export interface Trip {
   pointsOfInterest: AttractionCategory[];
   travelersCount: number;
   note: string;
+  imageUrl?: string;
 }
 
 export interface TripSummary {
