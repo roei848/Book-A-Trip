@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
@@ -66,6 +67,7 @@ public class AuthController(
         }
 
         var token = jwt.GenerateToken(user.Id, email, user.Role);
-        return Redirect($"http://localhost:3000/auth/callback?token={token}");
+        var callbackUrl = QueryHelpers.AddQueryString("http://localhost:3000/auth/callback", "token", token);
+        return Redirect(callbackUrl);
     }
 }
