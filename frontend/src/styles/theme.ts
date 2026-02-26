@@ -10,6 +10,9 @@ export const theme = {
     textLight: '#64748b',
     border: '#e2e8f0',
     error: '#ef4444',
+    gradientStart: '#0f172a',
+    gradientMid: '#1e1b4b',
+    gradientEnd: '#312e81',
   },
   fonts: {
     body: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",

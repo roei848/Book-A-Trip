@@ -29,12 +29,15 @@ builder.Services.AddHttpClient(TripGenerationService.ClientName, client =>
 });
 
 builder.Services.AddScoped<ITripGenerationService, TripGenerationService>();
+builder.Services.AddScoped<ITripService, TripService>();
+
+var allowedOrigin = builder.Configuration["Cors:AllowedOrigin"]!;
 
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:3000")
+        policy.WithOrigins(allowedOrigin)
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
