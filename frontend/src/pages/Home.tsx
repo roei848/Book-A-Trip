@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { apiClient } from '../api/client';
+import { getTrips } from '../api/trips';
 import { Card } from '../components/sharedComponents/Card';
 import { theme } from '../styles/theme';
 import type { TripSummary } from '../types/models';
@@ -9,10 +9,7 @@ export const Home = () => {
   const [trips, setTrips] = useState<TripSummary[]>([]);
 
   useEffect(() => {
-    apiClient.get<TripSummary[]>('/itinerary').then((res) => {
-      console.log('Fetched trips:', res.data);
-      setTrips(res.data);
-    });
+    getTrips().then(setTrips);
   }, []);
 
   return (
