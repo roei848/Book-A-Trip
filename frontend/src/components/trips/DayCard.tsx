@@ -2,41 +2,46 @@ import styled from 'styled-components';
 import type { TripDay } from '../../types/models';
 import { theme } from '../../styles/theme';
 import { AttractionItem } from './AttractionItem';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface DayCardProps {
   day: TripDay;
 }
 
-const formatDate = (dateStr: string | null): string => {
+const formatDate = (dateStr: string | null, locale: string): string => {
   if (!dateStr) return '';
-  return new Date(dateStr).toLocaleDateString('en-US', {
+  return new Date(dateStr).toLocaleDateString(locale, {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
   });
 };
 
-export const DayCard = ({ day }: DayCardProps) => (
-  <DayCardWrapper>
-    <div className="day-header">
-      <div className="day-number">Day {day.dayNumber}</div>
-      <div className="day-detail">
-        {day.date && <span className="day-date">{formatDate(day.date)}</span>}
-        {day.startLocation && (
-          <span className="day-location">
-            <span className="pin">📍</span>
-            {day.startLocation}
-          </span>
-        )}
+export const DayCard = ({ day }: DayCardProps) => {
+  const { t, lang } = useLanguage();
+  const locale = lang === 'he' ? 'he-IL' : 'en-US';
+  return (
+    <DayCardWrapper>
+      <div className="day-header">
+        <div className="day-number">{t('tripPage', 'day')} {day.dayNumber}</div>
+        <div className="day-detail">
+          {day.date && <span className="day-date">{formatDate(day.date, locale)}</span>}
+          {day.startLocation && (
+            <span className="day-location">
+              <span className="pin">📍</span>
+              {day.startLocation}
+            </span>
+          )}
+        </div>
       </div>
-    </div>
-    <div className="attractions">
-      {day.attractions.map((attraction) => (
-        <AttractionItem key={attraction.id} attraction={attraction} />
-      ))}
-    </div>
-  </DayCardWrapper>
-);
+      <div className="attractions">
+        {day.attractions.map((attraction) => (
+          <AttractionItem key={attraction.id} attraction={attraction} />
+        ))}
+      </div>
+    </DayCardWrapper>
+  );
+};
 
 const DayCardWrapper = styled.div`
   background: ${theme.colors.surface};

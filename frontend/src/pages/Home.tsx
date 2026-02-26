@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { getTrips } from '../api/trips';
 import { Button } from '../components/sharedComponents/Button';
 import { Input } from '../components/sharedComponents/Input';
-import { ThemeToggle } from '../components/sharedComponents/ThemeToggle';
+import { useLanguage } from '../context/LanguageContext';
 import { theme } from '../styles/theme';
 import type { TripSummary } from '../types/models';
 
@@ -12,45 +12,32 @@ export const Home = () => {
   const [trips, setTrips] = useState<TripSummary[]>([]);
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
+  const { t, isRtl } = useLanguage();
 
   useEffect(() => {
     getTrips().then(setTrips);
   }, []);
 
   const filtered = trips.filter(
-    (t) =>
-      t.destination.toLowerCase().includes(search.toLowerCase()) ||
-      t.title.toLowerCase().includes(search.toLowerCase()),
+    (trip) =>
+      trip.destination.toLowerCase().includes(search.toLowerCase()) ||
+      trip.title.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
-    <HomeWrapper>
-      <nav className="navbar">
-        <div className="nav-brand">
-          <span className="nav-icon">✈</span>
-          <span className="nav-name">Book-A-Trip</span>
-        </div>
-        <div className="nav-links">
-          <span className="nav-link active">My Trips</span>
-          <span className="nav-link" onClick={() => navigate('/create')}>
-            + New Trip
-          </span>
-          <ThemeToggle />
-        </div>
-      </nav>
-
+    <HomeWrapper dir={isRtl ? 'rtl' : 'ltr'}>
       <main className="main">
         <div className="header-row">
           <div className="header-text">
-            <h1 className="page-title">My Trips</h1>
-            <p className="page-subtitle">Manage and plan all your trips in one place</p>
+            <h1 className="page-title">{t('home', 'myTrips')}</h1>
+            <p className="page-subtitle">{t('home', 'subtitle')}</p>
           </div>
-          <Button onClick={() => navigate('/create')}>+ Create New Trip</Button>
+          <Button onClick={() => navigate('/create')}>{t('home', 'createButton')}</Button>
         </div>
 
         <div className="search-bar">
           <Input
-            placeholder="Search trip by destination..."
+            placeholder={t('home', 'searchPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -58,8 +45,8 @@ export const Home = () => {
 
         {filtered.length === 0 ? (
           <div className="empty-state">
-            <p className="empty-text">No trips found. Start planning your next adventure!</p>
-            <Button onClick={() => navigate('/create')}>+ Create New Trip</Button>
+            <p className="empty-text">{t('home', 'emptyState')}</p>
+            <Button onClick={() => navigate('/create')}>{t('home', 'createButton')}</Button>
           </div>
         ) : (
           <div className="trip-grid">
@@ -92,55 +79,6 @@ const HomeWrapper = styled.div`
   min-height: 100vh;
   background: ${theme.colors.background};
   font-family: ${theme.fonts.body};
-
-  .navbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 ${theme.spacing.xl};
-    height: 64px;
-    background: ${theme.colors.gradientStart};
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  .nav-brand {
-    display: flex;
-    align-items: center;
-    gap: ${theme.spacing.sm};
-    color: ${theme.colors.surface};
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: -0.3px;
-  }
-
-  .nav-icon {
-    font-size: 20px;
-  }
-
-  .nav-links {
-    display: flex;
-    align-items: center;
-    gap: ${theme.spacing.xl};
-  }
-
-  .nav-link {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    padding: ${theme.spacing.xs} ${theme.spacing.sm};
-    border-radius: ${theme.borderRadius};
-    transition: color 0.15s;
-
-    &:hover {
-      color: ${theme.colors.surface};
-    }
-
-    &.active {
-      color: ${theme.colors.surface};
-      background: rgba(255, 255, 255, 0.1);
-    }
-  }
 
   .main {
     max-width: 1100px;

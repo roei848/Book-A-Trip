@@ -5,6 +5,7 @@ import {
   TransportType,
   TravelPace,
 } from './enums';
+import { UserRole } from './auth';
 
 export interface Location {
   lat: number;
@@ -62,4 +63,12 @@ export interface GenerateTripRequest {
   pointsOfInterest: AttractionCategory[];
   travelersCount: number;
   note: string;
+}
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  createdAt: string;
 }

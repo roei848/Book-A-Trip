@@ -5,6 +5,7 @@ import { generateTrip } from '../api/trips';
 import { Button } from '../components/sharedComponents/Button';
 import { Card } from '../components/sharedComponents/Card';
 import { Input } from '../components/sharedComponents/Input';
+import { useLanguage } from '../context/LanguageContext';
 import { theme } from '../styles/theme';
 import { AttractionCategory, BudgetLevel, FoodPreference, TransportType, TravelPace } from '../types/enums';
 import type { GenerateTripRequest } from '../types/models';
@@ -18,24 +19,35 @@ interface TripFormState {
   children: number;
   infants: number;
   interests: string[];
-  style: string;
+  style: TravelPace;
   budget: number;
   accommodation: string;
-  food: string;
-  transport: string;
+  food: FoodPreference;
+  transport: TransportType;
   notes: string;
 }
 
-const INTERESTS = [
-  'תיאטרון',
-  'מוזיאונים',
-  'היסטוריה',
-  'ספורט',
-  'טבע',
-  'אומנות',
-  'קניות',
-  'חיי לילה',
-];
+const INTEREST_KEYS = [
+  'theater',
+  'museums',
+  'history',
+  'sports',
+  'nature',
+  'art',
+  'shopping',
+  'nightlife',
+] as const;
+
+const interestToCategory: Record<string, AttractionCategory> = {
+  museums: AttractionCategory.Museum,
+  nature: AttractionCategory.Nature,
+  shopping: AttractionCategory.Shopping,
+  theater: AttractionCategory.Other,
+  history: AttractionCategory.Museum,
+  sports: AttractionCategory.Other,
+  art: AttractionCategory.Other,
+  nightlife: AttractionCategory.Other,
+};
 
 const initialFormState: TripFormState = {
   destination: '',
@@ -46,16 +58,17 @@ const initialFormState: TripFormState = {
   children: 0,
   infants: 0,
   interests: [],
-  style: 'מאוזן',
+  style: TravelPace.Medium,
   budget: 15000,
-  accommodation: 'מלון',
-  food: 'ללא העדפה מיוחדת',
-  transport: 'תחבורה ציבורית',
+  accommodation: 'hotel',
+  food: FoodPreference.None,
+  transport: TransportType.PublicTransport,
   notes: '',
 };
 
 export const CreateTrip = () => {
   const navigate = useNavigate();
+  const { t, isRtl, toggleLang, lang } = useLanguage();
   const [form, setForm] = useState<TripFormState>(initialFormState);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -87,50 +100,15 @@ export const CreateTrip = () => {
       : form.budget <= 37500 ? BudgetLevel.Luxury
       : BudgetLevel.Elite;
 
-    const transportMap: Record<string, TransportType> = {
-      'תחבורה ציבורית': TransportType.PublicTransport,
-      'מכונית שכורה': TransportType.CarRental,
-      'מונית': TransportType.CarRental,
-      'רגלי': TransportType.Walking,
-    };
-
-    const paceMap: Record<string, TravelPace> = {
-      'מאוזן': TravelPace.Medium,
-      'הרפתקאות': TravelPace.Intensive,
-      'רומנטי': TravelPace.Light,
-      'תרבותי': TravelPace.Medium,
-      'ספורטיבי': TravelPace.Intensive,
-    };
-
-    const foodMap: Record<string, FoodPreference> = {
-      'ללא העדפה מיוחדת': FoodPreference.None,
-      'טבעוני': FoodPreference.Vegan,
-      'צמחוני': FoodPreference.Vegetarian,
-      'ללא גלוטן': FoodPreference.None,
-      'כשר': FoodPreference.Kosher,
-      'חלאל': FoodPreference.Halal,
-    };
-
-    const interestMap: Record<string, AttractionCategory> = {
-      'מוזיאונים': AttractionCategory.Museum,
-      'טבע': AttractionCategory.Nature,
-      'קניות': AttractionCategory.Shopping,
-      'תיאטרון': AttractionCategory.Other,
-      'היסטוריה': AttractionCategory.Museum,
-      'ספורט': AttractionCategory.Other,
-      'אומנות': AttractionCategory.Other,
-      'חיי לילה': AttractionCategory.Other,
-    };
-
     return {
       destination: form.destination,
       startDate: form.startDate,
       endDate: form.endDate,
       budget,
-      transport: transportMap[form.transport] ?? TransportType.PublicTransport,
-      pace: paceMap[form.style] ?? TravelPace.Medium,
-      food: foodMap[form.food] ?? FoodPreference.None,
-      pointsOfInterest: form.interests.map((i) => interestMap[i] ?? AttractionCategory.Other),
+      transport: form.transport,
+      pace: form.style,
+      food: form.food,
+      pointsOfInterest: form.interests.map((i) => interestToCategory[i] ?? AttractionCategory.Other),
       travelersCount: form.adults + form.teens + form.children + form.infants,
       note: form.notes,
     };
@@ -143,25 +121,31 @@ export const CreateTrip = () => {
       await generateTrip(buildRequest());
       navigate('/');
     } catch {
-      setError('שגיאה ביצירת הטיול. אנא נסה שוב.');
+      setError(t('createTrip', 'errorMessage'));
     } finally {
       setIsLoading(false);
     }
   };
 
-  const travelerFields: { key: 'adults' | 'teens' | 'children' | 'infants'; label: string }[] = [
-    { key: 'adults', label: 'מבוגרים' },
-    { key: 'teens', label: 'בני נוער' },
-    { key: 'children', label: 'ילדים' },
-    { key: 'infants', label: 'תינוקות' },
+  const travelerFields: { key: 'adults' | 'teens' | 'children' | 'infants'; labelKey: string }[] = [
+    { key: 'adults', labelKey: 'adults' },
+    { key: 'teens', labelKey: 'teens' },
+    { key: 'children', labelKey: 'children' },
+    { key: 'infants', labelKey: 'infants' },
   ];
 
   return (
-    <CreateTripWrapper dir="rtl">
+    <CreateTripWrapper dir={isRtl ? 'rtl' : 'ltr'}>
       <div className="page-content">
+        <div className="lang-bar">
+          <button className="lang-toggle" onClick={toggleLang}>
+            🌐 {lang === 'he' ? 'EN' : 'עב'}
+          </button>
+        </div>
+
         <div className="header">
-          <h1 className="page-title">צור טיול חדש</h1>
-          <p className="page-subtitle">ספר לנו על הטיול שלך ונתכנן עבורך מסלול מושלם</p>
+          <h1 className="page-title">{t('createTrip', 'pageTitle')}</h1>
+          <p className="page-subtitle">{t('createTrip', 'pageSubtitle')}</p>
         </div>
 
         {/* Section: Destination */}
@@ -169,37 +153,35 @@ export const CreateTrip = () => {
           <div className="section-header">
             <span className="section-icon">📍</span>
             <div>
-              <h2 className="section-title">פרטי יעד</h2>
-              <p className="section-subtitle">לאן אתה רוצה לנסוע?</p>
+              <h2 className="section-title">{t('createTrip', 'destinationTitle')}</h2>
+              <p className="section-subtitle">{t('createTrip', 'destinationSubtitle')}</p>
             </div>
           </div>
           <div className="destination-fields">
             <Input
-              label="יעד"
-              placeholder="לדוגמה: טוקיו, יפן"
+              label={t('createTrip', 'destinationLabel')}
+              placeholder={t('createTrip', 'destinationPlaceholder')}
               value={form.destination}
               onChange={(e) => setField('destination', e.target.value)}
             />
             <div className="date-row">
               <div className="date-field">
-                <label className="field-label">תאריך התחלה</label>
+                <label className="field-label">{t('createTrip', 'startDate')}</label>
                 <div className="date-input-wrapper">
                   <input
                     className="date-input"
                     type="date"
-                    placeholder="בחר תאריך"
                     value={form.startDate}
                     onChange={(e) => setField('startDate', e.target.value)}
                   />
                 </div>
               </div>
               <div className="date-field">
-                <label className="field-label">תאריך סיום</label>
+                <label className="field-label">{t('createTrip', 'endDate')}</label>
                 <div className="date-input-wrapper">
                   <input
                     className="date-input"
                     type="date"
-                    placeholder="בחר תאריך"
                     value={form.endDate}
                     onChange={(e) => setField('endDate', e.target.value)}
                   />
@@ -213,20 +195,16 @@ export const CreateTrip = () => {
         <Card className="section-card">
           <div className="section-header">
             <span className="section-icon">👥</span>
-            <h2 className="section-title">מי מטייל?</h2>
+            <h2 className="section-title">{t('createTrip', 'travelersTitle')}</h2>
           </div>
           <div className="traveler-row">
-            {travelerFields.map(({ key, label }) => (
+            {travelerFields.map(({ key, labelKey }) => (
               <div key={key} className="traveler-stepper">
-                <span className="traveler-label">{label}</span>
+                <span className="traveler-label">{t('createTrip', labelKey)}</span>
                 <div className="stepper-controls">
-                  <button className="stepper-btn" onClick={() => stepTraveler(key, -1)}>
-                    −
-                  </button>
+                  <button className="stepper-btn" onClick={() => stepTraveler(key, -1)}>−</button>
                   <span className="stepper-value">{form[key]}</span>
-                  <button className="stepper-btn" onClick={() => stepTraveler(key, 1)}>
-                    +
-                  </button>
+                  <button className="stepper-btn" onClick={() => stepTraveler(key, 1)}>+</button>
                 </div>
               </div>
             ))}
@@ -238,20 +216,22 @@ export const CreateTrip = () => {
           <div className="section-header">
             <span className="section-icon">✨</span>
             <div>
-              <h2 className="section-title">נקודות עניין</h2>
-              <p className="section-subtitle">מה מעניין אותך?</p>
+              <h2 className="section-title">{t('createTrip', 'interestsTitle')}</h2>
+              <p className="section-subtitle">{t('createTrip', 'interestsSubtitle')}</p>
             </div>
           </div>
           <div className="interests-grid">
-            {INTERESTS.map((interest) => (
-              <label key={interest} className="interest-item">
+            {INTEREST_KEYS.map((key) => (
+              <label key={key} className="interest-item">
                 <input
                   className="interest-checkbox"
                   type="checkbox"
-                  checked={form.interests.includes(interest)}
-                  onChange={() => toggleInterest(interest)}
+                  checked={form.interests.includes(key)}
+                  onChange={() => toggleInterest(key)}
                 />
-                <span className="interest-label">{interest}</span>
+                <span className="interest-label">
+                  {t('createTrip', `interest${key.charAt(0).toUpperCase() + key.slice(1)}`)}
+                </span>
               </label>
             ))}
           </div>
@@ -260,20 +240,20 @@ export const CreateTrip = () => {
         {/* Section: Trip Style */}
         <Card className="section-card">
           <div className="section-header">
-            <h2 className="section-title">אופי הטיול</h2>
+            <h2 className="section-title">{t('createTrip', 'styleTitle')}</h2>
           </div>
           <div className="select-field">
-            <label className="field-label">סגנון</label>
+            <label className="field-label">{t('createTrip', 'styleLabel')}</label>
             <select
               className="styled-select"
               value={form.style}
-              onChange={(e) => setField('style', e.target.value)}
+              onChange={(e) => setField('style', e.target.value as TravelPace)}
             >
-              <option>מאוזן</option>
-              <option>הרפתקאות</option>
-              <option>רומנטי</option>
-              <option>תרבותי</option>
-              <option>ספורטיבי</option>
+              <option value={TravelPace.Medium}>{t('createTrip', 'styleBalanced')}</option>
+              <option value={TravelPace.Intensive}>{t('createTrip', 'styleAdventure')}</option>
+              <option value={TravelPace.Light}>{t('createTrip', 'styleRomantic')}</option>
+              <option value={TravelPace.Medium}>{t('createTrip', 'styleCultural')}</option>
+              <option value={TravelPace.Intensive}>{t('createTrip', 'styleSporty')}</option>
             </select>
           </div>
         </Card>
@@ -282,9 +262,9 @@ export const CreateTrip = () => {
         <Card className="section-card">
           <div className="section-header">
             <span className="section-icon">💲</span>
-            <h2 className="section-title">תקציב</h2>
+            <h2 className="section-title">{t('createTrip', 'budgetTitle')}</h2>
           </div>
-          <label className="field-label">לאדם</label>
+          <label className="field-label">{t('createTrip', 'budgetPerPerson')}</label>
           <p className="budget-value">₪{form.budget.toLocaleString('he-IL')}</p>
           <input
             className="budget-slider"
@@ -305,19 +285,19 @@ export const CreateTrip = () => {
         <Card className="section-card">
           <div className="section-header">
             <span className="section-icon">🏨</span>
-            <h2 className="section-title">לינה</h2>
+            <h2 className="section-title">{t('createTrip', 'accommodationTitle')}</h2>
           </div>
           <div className="select-field">
-            <label className="field-label">סוג לינה</label>
+            <label className="field-label">{t('createTrip', 'accommodationLabel')}</label>
             <select
               className="styled-select"
               value={form.accommodation}
               onChange={(e) => setField('accommodation', e.target.value)}
             >
-              <option>מלון</option>
-              <option>הוסטל</option>
-              <option>Airbnb</option>
-              <option>קמפינג</option>
+              <option value="hotel">{t('createTrip', 'accommodationHotel')}</option>
+              <option value="hostel">{t('createTrip', 'accommodationHostel')}</option>
+              <option value="airbnb">{t('createTrip', 'accommodationAirbnb')}</option>
+              <option value="camping">{t('createTrip', 'accommodationCamping')}</option>
             </select>
           </div>
         </Card>
@@ -326,21 +306,21 @@ export const CreateTrip = () => {
         <Card className="section-card">
           <div className="section-header">
             <span className="section-icon">🍴</span>
-            <h2 className="section-title">העדפות אוכל</h2>
+            <h2 className="section-title">{t('createTrip', 'foodTitle')}</h2>
           </div>
           <div className="select-field">
-            <label className="field-label">העדפה</label>
+            <label className="field-label">{t('createTrip', 'foodLabel')}</label>
             <select
               className="styled-select"
               value={form.food}
-              onChange={(e) => setField('food', e.target.value)}
+              onChange={(e) => setField('food', e.target.value as FoodPreference)}
             >
-              <option>ללא העדפה מיוחדת</option>
-              <option>טבעוני</option>
-              <option>צמחוני</option>
-              <option>ללא גלוטן</option>
-              <option>כשר</option>
-              <option>חלאל</option>
+              <option value={FoodPreference.None}>{t('createTrip', 'foodNone')}</option>
+              <option value={FoodPreference.Vegan}>{t('createTrip', 'foodVegan')}</option>
+              <option value={FoodPreference.Vegetarian}>{t('createTrip', 'foodVegetarian')}</option>
+              <option value={FoodPreference.None}>{t('createTrip', 'foodGlutenFree')}</option>
+              <option value={FoodPreference.Kosher}>{t('createTrip', 'foodKosher')}</option>
+              <option value={FoodPreference.Halal}>{t('createTrip', 'foodHalal')}</option>
             </select>
           </div>
         </Card>
@@ -349,19 +329,19 @@ export const CreateTrip = () => {
         <Card className="section-card">
           <div className="section-header">
             <span className="section-icon">🚗</span>
-            <h2 className="section-title">תחבורה</h2>
+            <h2 className="section-title">{t('createTrip', 'transportTitle')}</h2>
           </div>
           <div className="select-field">
-            <label className="field-label">העדפת תנועה</label>
+            <label className="field-label">{t('createTrip', 'transportLabel')}</label>
             <select
               className="styled-select"
               value={form.transport}
-              onChange={(e) => setField('transport', e.target.value)}
+              onChange={(e) => setField('transport', e.target.value as TransportType)}
             >
-              <option>תחבורה ציבורית</option>
-              <option>מכונית שכורה</option>
-              <option>מונית</option>
-              <option>רגלי</option>
+              <option value={TransportType.PublicTransport}>{t('createTrip', 'transportPublic')}</option>
+              <option value={TransportType.CarRental}>{t('createTrip', 'transportCar')}</option>
+              <option value={TransportType.CarRental}>{t('createTrip', 'transportTaxi')}</option>
+              <option value={TransportType.Walking}>{t('createTrip', 'transportWalking')}</option>
             </select>
           </div>
         </Card>
@@ -369,12 +349,12 @@ export const CreateTrip = () => {
         {/* Section: Notes */}
         <Card className="section-card">
           <div className="section-header">
-            <h2 className="section-title">הערות נוספות</h2>
+            <h2 className="section-title">{t('createTrip', 'notesTitle')}</h2>
           </div>
-          <p className="section-subtitle">ספר לנו עוד משהו שחשוב לך</p>
+          <p className="section-subtitle">{t('createTrip', 'notesSubtitle')}</p>
           <textarea
             className="notes-textarea"
-            placeholder="לדוגמה: אנחנו אוהבים להתעורר מאוחר, מעדיפים מסעדות מקומיות על פני רשתות, רוצים להימנע מקניונים..."
+            placeholder={t('createTrip', 'notesPlaceholder')}
             value={form.notes}
             onChange={(e) => setField('notes', e.target.value)}
             rows={4}
@@ -387,12 +367,12 @@ export const CreateTrip = () => {
         <div className="action-bar">
           <div className="action-submit">
             <Button variant="primary" onClick={handleSubmit} disabled={isLoading}>
-              {isLoading ? 'יוצר טיול...' : 'צור טיול עם AI ✨'}
+              {isLoading ? t('createTrip', 'submitLoading') : t('createTrip', 'submitButton')}
             </Button>
           </div>
           <div className="action-cancel">
             <Button variant="secondary" onClick={() => navigate('/')}>
-              ביטול
+              {t('createTrip', 'cancelButton')}
             </Button>
           </div>
         </div>
@@ -418,6 +398,29 @@ const CreateTripWrapper = styled.div`
     display: flex;
     flex-direction: column;
     gap: ${theme.spacing.lg};
+  }
+
+  .lang-bar {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .lang-toggle {
+    background: ${theme.colors.border};
+    border: 1px solid ${theme.colors.border};
+    border-radius: ${theme.borderRadius};
+    color: ${theme.colors.text};
+    font-family: ${theme.fonts.body};
+    font-size: 13px;
+    font-weight: 600;
+    padding: ${theme.spacing.xs} ${theme.spacing.md};
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:hover {
+      background: ${theme.colors.secondary};
+      color: ${theme.colors.surface};
+    }
   }
 
   .header {
