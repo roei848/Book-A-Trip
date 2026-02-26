@@ -24,19 +24,6 @@ export const Home = () => {
 
   return (
     <HomeWrapper>
-      <nav className="navbar">
-        <div className="nav-brand">
-          <span className="nav-icon">✈</span>
-          <span className="nav-name">Book-A-Trip</span>
-        </div>
-        <div className="nav-links">
-          <span className="nav-link active">My Trips</span>
-          <span className="nav-link" onClick={() => navigate('/create')}>
-            + New Trip
-          </span>
-        </div>
-      </nav>
-
       <main className="main">
         <div className="header-row">
           <div className="header-text">
@@ -90,55 +77,6 @@ const HomeWrapper = styled.div`
   min-height: 100vh;
   background: ${theme.colors.background};
   font-family: ${theme.fonts.body};
-
-  .navbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 ${theme.spacing.xl};
-    height: 64px;
-    background: ${theme.colors.gradientStart};
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  .nav-brand {
-    display: flex;
-    align-items: center;
-    gap: ${theme.spacing.sm};
-    color: ${theme.colors.surface};
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: -0.3px;
-  }
-
-  .nav-icon {
-    font-size: 20px;
-  }
-
-  .nav-links {
-    display: flex;
-    align-items: center;
-    gap: ${theme.spacing.xl};
-  }
-
-  .nav-link {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    padding: ${theme.spacing.xs} ${theme.spacing.sm};
-    border-radius: ${theme.borderRadius};
-    transition: color 0.15s;
-
-    &:hover {
-      color: ${theme.colors.surface};
-    }
-
-    &.active {
-      color: ${theme.colors.surface};
-      background: rgba(255, 255, 255, 0.1);
-    }
-  }
 
   .main {
     max-width: 1100px;
