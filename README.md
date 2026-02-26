@@ -9,7 +9,15 @@ An AI-powered trip booking and planning application built for educational purpos
 
 ## Getting Started
 
-### Backend
+### 1. Setup config files
+
+Run once after cloning — copies both example config files into place:
+
+```bash
+./setup.sh
+```
+
+### 2. Run the backend
 
 ```bash
 dotnet run --project backend/BookATrip.Api
@@ -17,7 +25,7 @@ dotnet run --project backend/BookATrip.Api
 
 Runs on http://localhost:5000 — Swagger UI at http://localhost:5000/swagger
 
-### Frontend
+### 3. Run the frontend
 
 ```bash
 cd frontend && npm run dev
