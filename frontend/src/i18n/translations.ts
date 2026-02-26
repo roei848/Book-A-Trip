@@ -105,6 +105,8 @@ export const translations = {
       categoryShopping: 'קניות',
       categoryHotel: 'מלון',
       categoryOther: 'אחר',
+      hourAbbr: "ש'",
+      minuteAbbr: "ד'",
     },
     loginPage: {
       title: 'Book A Trip',
@@ -217,6 +219,8 @@ export const translations = {
       categoryShopping: 'Shopping',
       categoryHotel: 'Hotel',
       categoryOther: 'Other',
+      hourAbbr: 'h',
+      minuteAbbr: 'm',
     },
     loginPage: {
       title: 'Book A Trip',

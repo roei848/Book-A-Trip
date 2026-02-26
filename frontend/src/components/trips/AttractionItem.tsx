@@ -3,11 +3,11 @@ import type { Attraction } from '../../types/models';
 import { theme } from '../../styles/theme';
 import { useLanguage } from '../../context/LanguageContext';
 
-const formatDuration = (minutes: number): string => {
-  if (minutes < 60) return `${minutes}m`;
+const formatDuration = (minutes: number, hourAbbr: string, minuteAbbr: string): string => {
+  if (minutes < 60) return `${minutes}${minuteAbbr}`;
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
-  return m > 0 ? `${h}h ${m}m` : `${h}h`;
+  return m > 0 ? `${h}${hourAbbr} ${m}${minuteAbbr}` : `${h}${hourAbbr}`;
 };
 
 interface AttractionItemProps {
@@ -18,6 +18,8 @@ export const AttractionItem = ({ attraction }: AttractionItemProps) => {
   const { t } = useLanguage();
   const categoryKey = `category${attraction.category.charAt(0).toUpperCase()}${attraction.category.slice(1)}` as const;
   const label = t('tripPage', categoryKey) || t('tripPage', 'categoryOther');
+  const hourAbbr = t('tripPage', 'hourAbbr');
+  const minuteAbbr = t('tripPage', 'minuteAbbr');
 
   return (
     <AttractionItemWrapper>
@@ -27,7 +29,7 @@ export const AttractionItem = ({ attraction }: AttractionItemProps) => {
           <span className="category-badge" data-category={attraction.category}>
             {label}
           </span>
-          <span className="duration">⏱ {formatDuration(attraction.durationInMinutes)}</span>
+          <span className="duration">⏱ {formatDuration(attraction.durationInMinutes, hourAbbr, minuteAbbr)}</span>
         </div>
       </div>
       <p className="attraction-description">{attraction.description}</p>
