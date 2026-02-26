@@ -1,12 +1,13 @@
 using BookATrip.Api.Models;
 using BookATrip.Api.Models.Enums;
+using BookATrip.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookATrip.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ItineraryController : ControllerBase
+public class ItineraryController(ITripGenerationService tripGenerationService) : ControllerBase
 {
     [HttpGet]
     public IActionResult GetAll()
@@ -88,6 +89,13 @@ public class ItineraryController : ControllerBase
             ]
         };
 
+        return Ok(trip);
+    }
+
+    [HttpPost("generate")]
+    public async Task<IActionResult> Generate([FromBody] GenerateTripRequest request)
+    {
+        var trip = await tripGenerationService.GenerateTripAsync(request);
         return Ok(trip);
     }
 }
