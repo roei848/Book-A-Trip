@@ -17,7 +17,7 @@ export const Home = () => {
 
   return (
     <Container>
-      <Content>
+      <div className="content">
         <Title>Book A Trip</Title>
         <TripList>
           {trips.map((trip) => (
@@ -27,7 +27,7 @@ export const Home = () => {
             </Card>
           ))}
         </TripList>
-      </Content>
+      </div>
     </Container>
   );
 };
@@ -41,6 +41,11 @@ const Container = styled.div`
     ${theme.colors.gradientEnd} 100%
   );
   padding: ${theme.spacing.xl};
+
+  .content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
 `;
 
 const Title = styled.h1`
@@ -65,9 +70,4 @@ const TripDestination = styled.p`
   font-family: ${theme.fonts.body};
   color: ${theme.colors.textLight};
   margin: 0;
-`;
-
-const Content = styled.div`
-  max-width: 800px;
-  margin: 0 auto;
 `;

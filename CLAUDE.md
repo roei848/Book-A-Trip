@@ -20,6 +20,10 @@ cd frontend && npm run dev
 ```
 Runs on http://localhost:3000.
 
+## Git Workflow
+
+**Every task must be done on a new branch.** Before starting any work, create a branch named after the task (e.g., `feature/add-trip-card`, `fix/booking-form-validation`). Never commit directly to `master`.
+
 ## Rules
 
 - Backend: see [`.rules/be/codeStyle.md`](.rules/be/codeStyle.md) and [`.rules/be/codeStructure.md`](.rules/be/codeStructure.md)
