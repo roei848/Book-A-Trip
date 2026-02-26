@@ -34,7 +34,12 @@ export const Home = () => {
 
 const Container = styled.div`
   min-height: 100vh;
-  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+  background: linear-gradient(
+    135deg,
+    ${theme.colors.gradientStart} 0%,
+    ${theme.colors.gradientMid} 50%,
+    ${theme.colors.gradientEnd} 100%
+  );
   padding: ${theme.spacing.xl};
 `;
 
