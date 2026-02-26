@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
+import { Header } from './components/sharedComponents/Header';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeContextProvider } from './contexts/ThemeContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
@@ -21,6 +22,9 @@ const GlobalStyle = createGlobalStyle`
     --color-text-light: #64748b;
     --color-border: #e2e8f0;
     --color-error: #ef4444;
+    --color-accent: #7c3aed;
+    --color-accent-end: #6366f1;
+    --color-warning: #f59e0b;
     --color-gradient-start: #0f172a;
     --color-gradient-mid: #1e1b4b;
     --color-gradient-end: #312e81;
@@ -37,6 +41,9 @@ const GlobalStyle = createGlobalStyle`
     --color-text-light: #94a3b8;
     --color-border: #334155;
     --color-error: #f87171;
+    --color-accent: #a78bfa;
+    --color-accent-end: #818cf8;
+    --color-warning: #fbbf24;
     --color-gradient-start: #020617;
     --color-gradient-mid: #0f172a;
     --color-gradient-end: #1e1b4b;
@@ -49,6 +56,7 @@ function App() {
       <GlobalStyle />
       <AuthProvider>
         <BrowserRouter>
+          <Header />
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/auth/callback" element={<AuthCallbackPage />} />
