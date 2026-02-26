@@ -9,10 +9,18 @@ public interface IEncryptionService
     string Decrypt(string ciphertext);
 }
 
-public class EncryptionService(IConfiguration configuration) : IEncryptionService
+public class EncryptionService : IEncryptionService
 {
-    private readonly byte[] _key = Convert.FromBase64String(
-        configuration["Encryption:Key"] ?? throw new InvalidOperationException("Encryption:Key is not configured"));
+    private readonly byte[] _key;
+
+    public EncryptionService(IConfiguration configuration)
+    {
+        var keyBase64 = configuration["Encryption:Key"]
+            ?? throw new InvalidOperationException("Encryption:Key is not configured");
+        _key = Convert.FromBase64String(keyBase64);
+        if (_key.Length != 32)
+            throw new InvalidOperationException("Encryption:Key must be a 256-bit (32-byte) Base64-encoded value.");
+    }
 
     public string Encrypt(string plaintext)
     {
@@ -35,14 +43,21 @@ public class EncryptionService(IConfiguration configuration) : IEncryptionServic
         if (parts.Length != 3)
             throw new ArgumentException("Invalid ciphertext format", nameof(ciphertext));
 
-        var nonce = Convert.FromBase64String(parts[0]);
-        var tag = Convert.FromBase64String(parts[1]);
-        var ciphertextBytes = Convert.FromBase64String(parts[2]);
-        var plaintextBytes = new byte[ciphertextBytes.Length];
+        byte[] nonce, tag, ciphertextBytes;
+        try
+        {
+            nonce = Convert.FromBase64String(parts[0]);
+            tag = Convert.FromBase64String(parts[1]);
+            ciphertextBytes = Convert.FromBase64String(parts[2]);
+        }
+        catch (FormatException ex)
+        {
+            throw new ArgumentException("Ciphertext contains invalid Base64 data", nameof(ciphertext), ex);
+        }
 
+        var plaintextBytes = new byte[ciphertextBytes.Length];
         using var aes = new AesGcm(_key, AesGcm.TagByteSizes.MaxSize);
         aes.Decrypt(nonce, ciphertextBytes, tag, plaintextBytes);
-
         return Encoding.UTF8.GetString(plaintextBytes);
     }
 }
