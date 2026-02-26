@@ -1,4 +1,7 @@
+using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using BookATrip.Api.Constants;
 using BookATrip.Api.Data;
 using BookATrip.Api.Services;
@@ -7,8 +10,6 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,13 +26,28 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddHttpClient(TripGenerationService.ClientName, client =>
+{
+    var apiKey = builder.Configuration["OpenRouter:ApiKey"];
+    var baseUrl = builder.Configuration["OpenRouter:BaseUrl"]!;
+    client.BaseAddress = new Uri(baseUrl);
+    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+});
+
+builder.Services.AddScoped<ITripGenerationService, TripGenerationService>();
+builder.Services.AddScoped<ITripService, TripService>();
+
+var allowedOrigin = builder.Configuration["Cors:AllowedOrigin"];
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:3000")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        if (!string.IsNullOrEmpty(allowedOrigin))
+            policy.WithOrigins(allowedOrigin);
+        else
+            policy.AllowAnyOrigin();
+        policy.AllowAnyHeader().AllowAnyMethod();
     });
 });
 

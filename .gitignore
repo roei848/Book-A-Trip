@@ -8,3 +8,6 @@
 
 # Docs
 docs/
+
+# Git worktrees
+.worktrees/

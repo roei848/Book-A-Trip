@@ -20,10 +20,37 @@ cd frontend && npm run dev
 ```
 Runs on http://localhost:3000.
 
+## Environment Variables
+
+Run once after cloning to auto-create both config files from their examples:
+```bash
+./setup.sh
+```
+
+### Backend
+Config is stored in `appsettings.json` (gitignored). See `appsettings.Example.json` for the template.
+
+| Key | Description | Default |
+|-----|-------------|---------|
+| `ConnectionStrings:DefaultConnection` | SQLite connection string | `Data Source=bookatrip.db` |
+| `Cors:AllowedOrigin` | Frontend URL allowed by CORS | `http://localhost:3000` |
+
+### Frontend
+Config is stored in `frontend/.env`. See `frontend/.env.example` for the template.
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `VITE_API_BASE_URL` | Backend API base URL | `http://localhost:5000/api` |
+
+## Git Workflow
+
+**Every task must be done on a new branch.** Before starting any work, create a branch named after the task (e.g., `feature/add-trip-card`, `fix/booking-form-validation`). Never commit or push directly to `master` — always open a PR.
+
 ## Rules
 
 - Backend: see [`.rules/be/codeStyle.md`](.rules/be/codeStyle.md) and [`.rules/be/codeStructure.md`](.rules/be/codeStructure.md)
 - Frontend: see [`.rules/fe/codeStyle.md`](.rules/fe/codeStyle.md) and [`.rules/fe/codeStructure.md`](.rules/fe/codeStructure.md)
+- **Every configuration value (URLs, connection strings, secrets, ports) must be defined in the env files — never hardcoded in source code.** Backend values go in `appsettings.json`; frontend values go in `frontend/.env` and must be prefixed with `VITE_`. When adding a new key, also add it to the example file (`appsettings.Example.json` / `frontend/.env.example`).
 
 ## Agents
 

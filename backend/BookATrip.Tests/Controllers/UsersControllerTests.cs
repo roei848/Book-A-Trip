@@ -26,6 +26,7 @@ public class UsersControllerTests : IClassFixture<WebApplicationFactory<Program>
                     ["Google:ClientSecret"] = "test-client-secret",
                     ["Jwt:Secret"] = "test-jwt-secret-minimum-32-characters-long!!",
                     ["Encryption:Key"] = Convert.ToBase64String(new byte[32]),
+                    ["Cors:AllowedOrigin"] = "http://localhost:3000",
                 });
             });
             builder.ConfigureServices(services =>
