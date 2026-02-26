@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import type { CurrentUser } from '../types/auth';
 import { UserRole } from '../types/auth';
@@ -14,6 +14,7 @@ interface AuthContextValue {
   currentUser: CurrentUser | null;
   isAuthenticated: boolean;
   token: string | null;
+  login: (rawToken: string) => void;
   logout: () => void;
 }
 
@@ -44,14 +45,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  const logout = () => {
+  const login = useCallback((rawToken: string) => {
+    try {
+      const payload = jwtDecode<JwtPayload>(rawToken);
+      localStorage.setItem('token', rawToken);
+      setToken(rawToken);
+      setCurrentUser({ id: payload.sub, email: payload.email, role: payload.role as UserRole });
+    } catch {
+      // ignore malformed token
+    }
+  }, []);
+
+  const logout = useCallback(() => {
     localStorage.removeItem('token');
     setToken(null);
     setCurrentUser(null);
-  };
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ currentUser, isAuthenticated: !!currentUser, token, logout }}>
+    <AuthContext.Provider value={{ currentUser, isAuthenticated: !!currentUser, token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

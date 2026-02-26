@@ -38,7 +38,7 @@ const LoginPageWrapper = styled.div`
   }
 
   .error {
-    color: #d32f2f;
+    color: ${theme.colors.error};
   }
 
   .signin-link {

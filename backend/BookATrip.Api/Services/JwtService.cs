@@ -21,9 +21,12 @@ public class JwtService(IConfiguration configuration) : IJwtService
         var secret = configuration["Jwt:Secret"]
             ?? throw new InvalidOperationException("Jwt:Secret is not configured");
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var keyBytes = Encoding.UTF8.GetBytes(secret);
+        if (keyBytes.Length < 32)
+            throw new InvalidOperationException("Jwt:Secret must be at least 32 bytes when UTF-8 encoded.");
 
+        var key = new SymmetricSecurityKey(keyBytes);
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),

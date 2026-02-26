@@ -1,9 +1,12 @@
 using System.Net;
+using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using BookATrip.Api.Data;
+using BookATrip.Api.Models.Enums;
+using BookATrip.Api.Services;
 
 namespace BookATrip.Tests.Controllers;
 
@@ -41,5 +44,23 @@ public class UsersControllerTests : IClassFixture<WebApplicationFactory<Program>
         var client = _factory.CreateClient();
         var response = await client.GetAsync("/api/users");
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetUsers_WithFreeRoleToken_Returns403()
+    {
+        var config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Jwt:Secret"] = "test-jwt-secret-minimum-32-characters-long!!"
+            })
+            .Build();
+        var token = new JwtService(config).GenerateToken(Guid.NewGuid(), "user@example.com", UserRole.Free);
+
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await client.GetAsync("/api/users");
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 }

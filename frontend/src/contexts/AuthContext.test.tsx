@@ -1,6 +1,15 @@
 import { render, screen } from '@testing-library/react';
 import { AuthProvider, useAuth } from './AuthContext';
 
+const makeJwt = (payload: Record<string, unknown>) => {
+  const enc = (obj: Record<string, unknown>) =>
+    btoa(JSON.stringify(obj))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+  return `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${enc(payload)}.sig`;
+};
+
 const DisplayUser = () => {
   const { currentUser, isAuthenticated } = useAuth();
   return (
@@ -28,5 +37,19 @@ describe('AuthContext', () => {
     render(<AuthProvider><DisplayUser /></AuthProvider>);
     expect(screen.getByTestId('auth')).toHaveTextContent('yes');
     expect(screen.getByTestId('email')).toHaveTextContent('test@example.com');
+  });
+
+  it('clears an expired JWT from localStorage', () => {
+    const expiredToken = makeJwt({
+      sub: 'abc123',
+      email: 'test@example.com',
+      role: 'Free',
+      exp: 1,
+    });
+    localStorage.setItem('token', expiredToken);
+
+    render(<AuthProvider><DisplayUser /></AuthProvider>);
+    expect(screen.getByTestId('auth')).toHaveTextContent('no');
+    expect(localStorage.getItem('token')).toBeNull();
   });
 });
