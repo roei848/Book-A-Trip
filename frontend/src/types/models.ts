@@ -49,3 +49,16 @@ export interface TripSummary {
   title: string;
   destination: string;
 }
+
+export interface GenerateTripRequest {
+  destination: string;
+  startDate: string;
+  endDate: string;
+  budget: BudgetLevel;
+  transport: TransportType;
+  pace: TravelPace;
+  food: FoodPreference;
+  pointsOfInterest: AttractionCategory[];
+  travelersCount: number;
+  note: string;
+}

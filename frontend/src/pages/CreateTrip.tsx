@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { generateTrip } from '../api/trips';
 import { Button } from '../components/sharedComponents/Button';
 import { Card } from '../components/sharedComponents/Card';
 import { Input } from '../components/sharedComponents/Input';
 import { theme } from '../styles/theme';
+import { AttractionCategory, BudgetLevel, FoodPreference, TransportType, TravelPace } from '../types/enums';
+import type { GenerateTripRequest } from '../types/models';
 
 interface TripFormState {
   destination: string;
@@ -54,6 +57,8 @@ const initialFormState: TripFormState = {
 export const CreateTrip = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState<TripFormState>(initialFormState);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const setField = <K extends keyof TripFormState>(key: K, value: TripFormState[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -75,8 +80,73 @@ export const CreateTrip = () => {
     }));
   };
 
-  const handleSubmit = () => {
-    console.log(form);
+  const buildRequest = (): GenerateTripRequest => {
+    const budget =
+      form.budget <= 15000 ? BudgetLevel.Minimal
+      : form.budget <= 25000 ? BudgetLevel.Medium
+      : form.budget <= 37500 ? BudgetLevel.Luxury
+      : BudgetLevel.Elite;
+
+    const transportMap: Record<string, TransportType> = {
+      'תחבורה ציבורית': TransportType.PublicTransport,
+      'מכונית שכורה': TransportType.CarRental,
+      'מונית': TransportType.CarRental,
+      'רגלי': TransportType.Walking,
+    };
+
+    const paceMap: Record<string, TravelPace> = {
+      'מאוזן': TravelPace.Medium,
+      'הרפתקאות': TravelPace.Intensive,
+      'רומנטי': TravelPace.Light,
+      'תרבותי': TravelPace.Medium,
+      'ספורטיבי': TravelPace.Intensive,
+    };
+
+    const foodMap: Record<string, FoodPreference> = {
+      'ללא העדפה מיוחדת': FoodPreference.None,
+      'טבעוני': FoodPreference.Vegan,
+      'צמחוני': FoodPreference.Vegetarian,
+      'ללא גלוטן': FoodPreference.None,
+      'כשר': FoodPreference.Kosher,
+      'חלאל': FoodPreference.Halal,
+    };
+
+    const interestMap: Record<string, AttractionCategory> = {
+      'מוזיאונים': AttractionCategory.Museum,
+      'טבע': AttractionCategory.Nature,
+      'קניות': AttractionCategory.Shopping,
+      'תיאטרון': AttractionCategory.Other,
+      'היסטוריה': AttractionCategory.Museum,
+      'ספורט': AttractionCategory.Other,
+      'אומנות': AttractionCategory.Other,
+      'חיי לילה': AttractionCategory.Other,
+    };
+
+    return {
+      destination: form.destination,
+      startDate: form.startDate,
+      endDate: form.endDate,
+      budget,
+      transport: transportMap[form.transport] ?? TransportType.PublicTransport,
+      pace: paceMap[form.style] ?? TravelPace.Medium,
+      food: foodMap[form.food] ?? FoodPreference.None,
+      pointsOfInterest: form.interests.map((i) => interestMap[i] ?? AttractionCategory.Other),
+      travelersCount: form.adults + form.teens + form.children + form.infants,
+      note: form.notes,
+    };
+  };
+
+  const handleSubmit = async () => {
+    setError(null);
+    setIsLoading(true);
+    try {
+      await generateTrip(buildRequest());
+      navigate('/');
+    } catch {
+      setError('שגיאה ביצירת הטיול. אנא נסה שוב.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const travelerFields: { key: 'adults' | 'teens' | 'children' | 'infants'; label: string }[] = [
@@ -311,11 +381,13 @@ export const CreateTrip = () => {
           />
         </Card>
 
+        {error && <p className="error-message">{error}</p>}
+
         {/* Action Bar */}
         <div className="action-bar">
           <div className="action-submit">
-            <Button variant="primary" onClick={handleSubmit}>
-              צור טיול עם AI ✨
+            <Button variant="primary" onClick={handleSubmit} disabled={isLoading}>
+              {isLoading ? 'יוצר טיול...' : 'צור טיול עם AI ✨'}
             </Button>
           </div>
           <div className="action-cancel">
@@ -582,6 +654,13 @@ const CreateTripWrapper = styled.div`
     &:focus {
       border-color: ${theme.colors.primary};
     }
+  }
+
+  .error-message {
+    color: ${theme.colors.error};
+    font-size: 14px;
+    text-align: center;
+    margin: 0;
   }
 
   .action-bar {
