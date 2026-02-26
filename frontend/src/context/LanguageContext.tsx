@@ -6,7 +6,7 @@ interface LanguageContextValue {
   lang: Lang;
   isRtl: boolean;
   toggleLang: () => void;
-  t: (section: 'home' | 'createTrip', key: string) => string;
+  t: (section: 'home' | 'createTrip' | 'tripPage' | 'loginPage', key: string) => string;
 }
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
@@ -16,7 +16,7 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
 
   const toggleLang = () => setLang((prev) => (prev === 'he' ? 'en' : 'he'));
 
-  const t = (section: 'home' | 'createTrip', key: string): string => {
+  const t = (section: 'home' | 'createTrip' | 'tripPage' | 'loginPage', key: string): string => {
     const sectionObj = translations[lang][section] as Record<string, string>;
     return sectionObj[key] ?? key;
   };
