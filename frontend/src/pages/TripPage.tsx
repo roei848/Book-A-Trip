@@ -6,28 +6,11 @@ import { DayCard } from '../components/trips/DayCard';
 import { Button } from '../components/sharedComponents/Button';
 import { theme } from '../styles/theme';
 import type { Trip } from '../types/models';
+import { useLanguage } from '../context/LanguageContext';
 
-const metaLabels: Record<string, string> = {
-  minimal: 'Budget',
-  medium: 'Mid-range',
-  luxury: 'Luxury',
-  elite: 'Elite',
-  light: 'Light pace',
-  intensive: 'Intensive',
-  carRental: 'Car rental',
-  publicTransport: 'Public transport',
-  walking: 'Walking',
-  flight: 'Flight',
-  none: 'No restriction',
-  kosher: 'Kosher',
-  vegetarian: 'Vegetarian',
-  vegan: 'Vegan',
-  halal: 'Halal',
-};
-
-const formatDateRange = (start: string, end: string): string => {
+const formatDateRange = (start: string, end: string, locale: string): string => {
   const fmt = (d: string) =>
-    new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    new Date(d).toLocaleDateString(locale, { month: 'short', day: 'numeric', year: 'numeric' });
   return `${fmt(start)} – ${fmt(end)}`;
 };
 
@@ -37,6 +20,7 @@ export const TripPage = () => {
   const [trip, setTrip] = useState<Trip | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const { t, isRtl, lang } = useLanguage();
 
   useEffect(() => {
     if (!id) return;
@@ -47,14 +31,14 @@ export const TripPage = () => {
   }, [id]);
 
   return (
-    <TripPageWrapper>
+    <TripPageWrapper dir={isRtl ? 'rtl' : 'ltr'}>
       <nav className="navbar">
         <div className="nav-brand">
           <span className="nav-icon">✈</span>
           <span className="nav-name">Book-A-Trip</span>
         </div>
         <span className="back-link" onClick={() => navigate('/')}>
-          ← My Trips
+          {t('tripPage', 'backLink')}
         </span>
       </nav>
 
@@ -70,8 +54,8 @@ export const TripPage = () => {
 
       {!loading && error && (
         <div className="main center">
-          <p className="error-text">Trip not found.</p>
-          <Button onClick={() => navigate('/')}>← Back to My Trips</Button>
+          <p className="error-text">{t('tripPage', 'notFound')}</p>
+          <Button onClick={() => navigate('/')}>{t('tripPage', 'backButton')}</Button>
         </div>
       )}
 
@@ -90,7 +74,7 @@ export const TripPage = () => {
                   {trip.destination}
                 </div>
                 <h1 className="trip-title">{trip.title}</h1>
-                <p className="date-range">{formatDateRange(trip.startDate, trip.endDate)}</p>
+                <p className="date-range">{formatDateRange(trip.startDate, trip.endDate, lang === 'he' ? 'he-IL' : 'en-US')}</p>
               </div>
             </div>
           </div>
@@ -99,31 +83,31 @@ export const TripPage = () => {
             <div className="meta-chip">
               <span className="meta-icon">👥</span>
               <span className="meta-label">
-                {trip.travelersCount} traveler{trip.travelersCount !== 1 ? 's' : ''}
+                {trip.travelersCount} {trip.travelersCount !== 1 ? t('tripPage', 'travelers') : t('tripPage', 'traveler')}
               </span>
             </div>
             <div className="meta-chip">
               <span className="meta-icon">💰</span>
-              <span className="meta-label">{metaLabels[trip.budget] ?? trip.budget}</span>
+              <span className="meta-label">{t('tripPage', trip.budget)}</span>
             </div>
             <div className="meta-chip">
               <span className="meta-icon">🚶</span>
-              <span className="meta-label">{metaLabels[trip.pace] ?? trip.pace}</span>
+              <span className="meta-label">{t('tripPage', trip.pace)}</span>
             </div>
             <div className="meta-chip">
               <span className="meta-icon">🚌</span>
-              <span className="meta-label">{metaLabels[trip.transport] ?? trip.transport}</span>
+              <span className="meta-label">{t('tripPage', trip.transport)}</span>
             </div>
             {trip.food !== 'none' && (
               <div className="meta-chip">
                 <span className="meta-icon">🍽</span>
-                <span className="meta-label">{metaLabels[trip.food] ?? trip.food}</span>
+                <span className="meta-label">{t('tripPage', trip.food)}</span>
               </div>
             )}
           </div>
 
           <div className="itinerary">
-            <h2 className="section-title">Itinerary</h2>
+            <h2 className="section-title">{t('tripPage', 'itinerary')}</h2>
             <div className="days-list">
               {trip.days.map((day) => (
                 <DayCard key={day.dayNumber} day={day} />
